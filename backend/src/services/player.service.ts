@@ -28,4 +28,4 @@ function createAndAddPlayer(socket: ISocket) {
 	return player;
 }
 
-export { createAndAddPlayer };
+export { createAndAddPlayer, getPlayer };
