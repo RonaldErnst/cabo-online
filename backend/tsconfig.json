@@ -1,0 +1,29 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"lib": ["es6"],
+		"allowJs": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+		"outDir": "build",
+		"baseUrl": "src",
+		"paths": {
+			"@core/*": ["./core/*"],
+			"@controllers/*": ["./controllers/*"],
+			"@models/*": ["./models/*"],
+			"@services/*": ["./services/*"],
+			"@routes/*": ["./routes/*"],
+			"@common/*": ["../../common/*"],
+            "@settings": ["../settings.backend.json"],
+		}
+	},
+	"references": [{ "path": "../common" }],
+    "include": [ "./src/**/*", "../settings.json"]
+}

@@ -1,0 +1,7 @@
+{
+    "backend": {
+        "port": 4000,
+        "pingInterval": 5000,
+        "pingTimeout": 20000
+    }
+}
