@@ -10,6 +10,8 @@ function sendMessage(player: Player, message: string) {
 	const room = player.room;
 	const roomId = room.roomId;
 	socketIO.in(roomId).emit("CHAT", message, player.playerId);
+
+    console.log(`Player ${player.playerId}:`, message);
 }
 
 export { sendMessage };

@@ -10,6 +10,8 @@ import {
 import { registerChatEvents, registerRoomEvents } from "@routes/sockets";
 import settings from "./settings.backend";
 import { createAndAddPlayer } from "@services/player.service";
+import registerErrorEvents from "@routes/sockets/error.route";
+import registerDisconnectEvents from "@routes/sockets/disconnect.route";
 
 // Server Settings
 const PORT = settings.port;
@@ -30,10 +32,13 @@ const socketIO = new Server<
 >(httpServer, serverSettings);
 
 socketIO.on("connection", async (socket) => {
+    console.log(`User ${socket.id} joined`);
 	// LoggerService.log("Connected", `"Socket connected - ${socket.id}"`);
     const player = createAndAddPlayer(socket);
 	registerRoomEvents(player);
 	registerChatEvents(player);
+    registerErrorEvents(player);
+    registerDisconnectEvents(player);
 });
 
 httpServer.listen(PORT, () => {

@@ -34,6 +34,8 @@ function createAndAddRoom(
 
 	addRoom(room);
 
+    console.log(`Created and added room ${roomId}`);
+
     return room;
 }
 
@@ -44,6 +46,8 @@ function joinRoom(roomId: string, player: Player) {
 	room.playerSockets.push(player);
 	player.socket.join(roomId);
     player.room = room;
+
+    console.log(`User ${player.playerId} joined Room ${roomId}`);
 }
 
 export { createAndAddRoom, joinRoom };

@@ -25,6 +25,8 @@ function createAndAddPlayer(socket: ISocket) {
 
 	addPlayer(player);
 
+    console.log(`Created and added Player ${player.playerId}`);
+
 	return player;
 }
 
