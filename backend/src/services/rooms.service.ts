@@ -1,5 +1,16 @@
+import {
+	RoomAlreadyExistsError,
+	RoomError,
+	UnknownRoomError,
+} from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
-import { Room, RoomOptions } from "@common/types/models/room.model";
+import {
+	Room,
+	RoomEventData,
+	RoomOptions,
+} from "@common/types/models/room.model";
+import socketIO from "app";
+import { err, ok, Result } from "neverthrow";
 
 const rooms = new Map<string, Room>();
 
@@ -22,8 +33,8 @@ function createAndAddRoom(
 		maxPlayerCount: 10,
 		password: null,
 	}
-) {
-	if (existsRoom(roomId)) throw new Error("Room already exists"); // TODO proper Error
+): Result<Room, RoomError> {
+	if (existsRoom(roomId)) return err(new Error(`Room already exists ${roomId}`));
 
 	const room: Room = {
 		roomId,
@@ -34,20 +45,35 @@ function createAndAddRoom(
 
 	addRoom(room);
 
-    console.log(`Created and added room ${roomId}`);
+	// Tell all connected players about the new room
+	socketIO.emit("CREATE_ROOM", {
+		roomId,
+		isPrivate: options.isPrivate,
+		maxPlayerCount: options.maxPlayerCount,
+		currPlayerCount: 0,
+	});
 
-    return room;
+	return ok(room);
 }
 
-function joinRoom(roomId: string, player: Player) {
+function joinRoom(roomId: string, player: Player): Result<null, RoomError> {
 	const room = getRoom(roomId);
-	if (room === undefined) throw new Error("Room does not exist"); // TODO proper Error
+	if (room === undefined) return err(new UnknownRoomError(roomId));
 
 	room.playerSockets.push(player);
 	player.socket.join(roomId);
-    player.room = room;
+	player.room = room;
 
-    console.log(`User ${player.playerId} joined Room ${roomId}`);
+	// Tell all players in room that a new person joined
+	const roomEventData: RoomEventData = {
+		roomId,
+		isPrivate: room.options.isPrivate,
+		maxPlayerCount: room.options.maxPlayerCount,
+		currPlayerCount: room.playerSockets.length,
+	};
+	socketIO.in(roomId).emit("JOIN_ROOM", player.playerId, roomEventData);
+
+	return ok(null);
 }
 
 export { createAndAddRoom, joinRoom };

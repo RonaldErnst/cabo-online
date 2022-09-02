@@ -1,5 +1,7 @@
 import { Player } from "../models/player.model";
 import { Socket, Server } from "socket.io";
+import { RoomEventData } from "../models/room.model";
+import { ServerError, UnknownError } from "../errors";
 
 export interface ClientServerEvents  {
     CREATE_ROOM: (roomId: string) => void;
@@ -10,11 +12,11 @@ export interface ClientServerEvents  {
 }
 
 export interface ServerClientEvents {
-    CREATE_ROOM: () => void;
-    JOIN_ROOM: (playerId: string) => void;
+    CREATE_ROOM: (room: RoomEventData) => void;
+    JOIN_ROOM: (playerId: string, room: RoomEventData) => void;
     CHAT: (message: string, playerId: string) => void;
     GAME: (data: any) => void;
-    ERROR: (message: string) => void;
+    ERROR: (err: ServerError | UnknownError) => void;
     DISCONNECT: () => void;
 }
 

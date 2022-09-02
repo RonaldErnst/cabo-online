@@ -12,3 +12,10 @@ export interface Room {
 	host: Player | null;
     options: RoomOptions
 }
+
+export interface RoomEventData {
+    roomId: string;
+    isPrivate: boolean;
+    maxPlayerCount: number;
+    currPlayerCount: number;
+}

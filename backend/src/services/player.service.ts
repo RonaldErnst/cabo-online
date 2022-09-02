@@ -1,6 +1,7 @@
 import { Player } from "@common/types/models/player.model";
 import { ISocket } from "@common/types/sockets";
 import generateNickname from "utils/nicknameGenerator";
+
 // Map of socketIDs to Players
 const players = new Map<string, Player>();
 
@@ -25,7 +26,7 @@ function createAndAddPlayer(socket: ISocket) {
 
 	addPlayer(player);
 
-    console.log(`Created and added Player ${player.playerId}`);
+    console.log("Added player ", player.playerId);
 
 	return player;
 }

@@ -1,22 +1,28 @@
 import { Player } from "@common/types/models/player.model";
+import { ISocket } from "@common/types/sockets";
 import { createAndAddRoom, joinRoom } from "@services/rooms.service";
 import socketIO from "app";
 
-function handleCreateRoom(player: Player) {
+function handleCreateRoom(player: Player, socket: ISocket) {
 	return (roomId: string) => {
-		createAndAddRoom(roomId);
-		joinRoom(roomId, player);
-
-		socketIO.in(roomId).emit("CREATE_ROOM");
-		socketIO.in(roomId).emit("JOIN_ROOM", player.playerId);
+		createAndAddRoom(roomId)
+			.andThen(() => joinRoom(roomId, player))
+			.match(
+				() => {},
+				(err) => {
+                    console.log(err);
+                    socket.emit("ERROR", err);
+                }
+			);
 	};
 }
 
-function handleJoinRoom(player: Player) {
+function handleJoinRoom(player: Player, socket: ISocket) {
 	return (roomId: string) => {
-		joinRoom(roomId, player);
-
-		socketIO.in(roomId).emit("JOIN_ROOM", player.playerId);
+		joinRoom(roomId, player).match(
+			() => {},
+			(err) => socket.emit("ERROR", err)
+		);
 	};
 }
 
