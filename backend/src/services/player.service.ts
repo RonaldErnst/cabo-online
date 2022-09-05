@@ -1,5 +1,7 @@
+import { PlayerAlreadyExistsError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { ISocket } from "@common/types/sockets";
+import { err, ok, Result } from "neverthrow";
 import generateNickname from "utils/nicknameGenerator";
 
 // Map of socketIDs to Players
@@ -13,7 +15,7 @@ function addPlayer(player: Player) {
 	players.set(player.playerId, player);
 }
 
-function createAndAddPlayer(socket: ISocket) {
+function createAndAddPlayer(socket: ISocket): Result<Player, PlayerAlreadyExistsError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
@@ -22,13 +24,17 @@ function createAndAddPlayer(socket: ISocket) {
 		isReady: false,
 	};
 
+    if(players.has(player.playerId))
+        return err("PlayerAlreadyExistsError");
+
+    // Link socket and player
 	socket.data = player;
 
 	addPlayer(player);
 
     console.log("Added player ", player.playerId);
 
-	return player;
+	return ok(player);
 }
 
 export { createAndAddPlayer, getPlayer };

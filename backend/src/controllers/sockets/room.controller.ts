@@ -1,12 +1,11 @@
 import { Player } from "@common/types/models/player.model";
 import { ISocket } from "@common/types/sockets";
 import { createAndAddRoom, joinRoom } from "@services/rooms.service";
-import socketIO from "app";
 
 function handleCreateRoom(player: Player, socket: ISocket) {
 	return (roomId: string) => {
 		createAndAddRoom(roomId)
-			.andThen(() => joinRoom(roomId, player))
+			//.andThen(() => joinRoom(roomId, player))
 			.match(
 				() => {},
 				(err) => {

@@ -1,7 +1,5 @@
 import {
-	RoomAlreadyExistsError,
-	RoomError,
-	UnknownRoomError,
+	RoomError
 } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import {
@@ -34,7 +32,7 @@ function createAndAddRoom(
 		password: null,
 	}
 ): Result<Room, RoomError> {
-	if (existsRoom(roomId)) return err(new Error(`Room already exists ${roomId}`));
+	if (existsRoom(roomId)) return err("RoomAlreadyExistsError");
 
 	const room: Room = {
 		roomId,
@@ -58,7 +56,7 @@ function createAndAddRoom(
 
 function joinRoom(roomId: string, player: Player): Result<null, RoomError> {
 	const room = getRoom(roomId);
-	if (room === undefined) return err(new UnknownRoomError(roomId));
+	if (room === undefined) return err("UnknownRoomError");
 
 	room.playerSockets.push(player);
 	player.socket.join(roomId);

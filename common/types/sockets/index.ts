@@ -1,7 +1,7 @@
 import { Player } from "../models/player.model";
 import { Socket, Server } from "socket.io";
 import { RoomEventData } from "../models/room.model";
-import { ServerError, UnknownError } from "../errors";
+import ErrorTypes from "../errors"; 
 
 export interface ClientServerEvents  {
     CREATE_ROOM: (roomId: string) => void;
@@ -16,7 +16,7 @@ export interface ServerClientEvents {
     JOIN_ROOM: (playerId: string, room: RoomEventData) => void;
     CHAT: (message: string, playerId: string) => void;
     GAME: (data: any) => void;
-    ERROR: (err: ServerError | UnknownError) => void;
+    ERROR: (type: ErrorTypes) => void;
     DISCONNECT: () => void;
 }
 

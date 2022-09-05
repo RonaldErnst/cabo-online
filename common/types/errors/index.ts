@@ -1,17 +1,21 @@
-export interface ServerError extends Error {
-	
-}
+export type UnknownRoomError = "UnknownRoomError";
+export type RoomAlreadyExistsError = "RoomAlreadyExistsError";
+export type NoRoomChatError = "NoRoomChatError";
 
-export class UnknownError extends Error {
-    constructor(message: string) {
-		super(message);
+export type RoomError = "RoomError" | UnknownRoomError | RoomAlreadyExistsError;
+export type GameError = "GameError";
+export type ChatError = "ChatError" | NoRoomChatError;
+export type PlayerAlreadyExistsError = "PlayerAlreadyExistsError";
 
-		Object.setPrototypeOf(this, new.target.prototype);
-		this.name = Error.name;
-		Error.captureStackTrace(this);
-	}
-}
+export type ServerError = "ServerError" | PlayerAlreadyExistsError | RoomError | GameError | ChatError;
+export type UnknownError = "UnknownError";
 
-export * from "./chat.error";
-export * from "./game.error";
-export * from "./room.error";
+type ErrorTypes = ServerError | UnknownError;
+
+export default ErrorTypes;
+
+type A = "Test1";
+type B = A | "Test2";
+
+let a: A = "Test1";
+let b: B = "Test2";
