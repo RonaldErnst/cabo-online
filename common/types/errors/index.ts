@@ -10,12 +10,10 @@ export type PlayerAlreadyExistsError = "PlayerAlreadyExistsError";
 export type ServerError = "ServerError" | PlayerAlreadyExistsError | RoomError | GameError | ChatError;
 export type UnknownError = "UnknownError";
 
-type ErrorTypes = ServerError | UnknownError;
+export type ErrorType = ServerError | UnknownError;
 
-export default ErrorTypes;
-
-type A = "Test1";
-type B = A | "Test2";
-
-let a: A = "Test1";
-let b: B = "Test2";
+export interface IError<T = ErrorType> {
+    type: T;
+    message: string;
+    data?: any;
+}

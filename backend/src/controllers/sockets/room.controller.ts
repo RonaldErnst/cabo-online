@@ -9,9 +9,9 @@ function handleCreateRoom(player: Player, socket: ISocket) {
 			.match(
 				() => {},
 				(err) => {
-                    console.log(err);
-                    socket.emit("ERROR", err);
-                }
+					console.log(err);
+					socket.emit("ERROR", err);
+				}
 			);
 	};
 }

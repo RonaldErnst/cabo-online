@@ -1,10 +1,14 @@
+import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import socketIO from "app";
-import { ChatError } from "@common/types/errors";
-import { Result, ok, err } from "neverthrow";
+import { err, ok, Result } from "neverthrow";
 
-function sendMessage(player: Player, message: string): Result<null, ChatError> {
-	if (player.room === null) return err("NoRoomChatError");
+function sendMessage(player: Player, message: string): Result<null, IError> {
+	if (player.room === null)
+		return err({
+			type: "NoRoomChatError",
+			message: `Player has not joined a room yet. Cannot send message`,
+		});
 
 	const room = player.room;
 	const roomId = room.roomId;

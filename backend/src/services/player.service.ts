@@ -1,4 +1,4 @@
-import { PlayerAlreadyExistsError } from "@common/types/errors";
+import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { ISocket } from "@common/types/sockets";
 import { err, ok, Result } from "neverthrow";
@@ -15,7 +15,7 @@ function addPlayer(player: Player) {
 	players.set(player.playerId, player);
 }
 
-function createAndAddPlayer(socket: ISocket): Result<Player, PlayerAlreadyExistsError> {
+function createAndAddPlayer(socket: ISocket): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
@@ -24,15 +24,18 @@ function createAndAddPlayer(socket: ISocket): Result<Player, PlayerAlreadyExists
 		isReady: false,
 	};
 
-    if(players.has(player.playerId))
-        return err("PlayerAlreadyExistsError");
+	if (players.has(player.playerId))
+		return err({
+			type: "PlayerAlreadyExistsError",
+			message: `Player ${player.playerId} already exists`,
+		});
 
-    // Link socket and player
+	// Link socket and player
 	socket.data = player;
 
 	addPlayer(player);
 
-    console.log("Added player ", player.playerId);
+	console.log("Added player ", player.playerId);
 
 	return ok(player);
 }

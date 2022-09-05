@@ -41,11 +41,16 @@ const socketIO = new Server<
 
 socketIO.on("connection", async (socket) => {
 	// LoggerService.log("Connected", `"Socket connected - ${socket.id}"`);
-	const player = createAndAddPlayer(socket);
-	registerRoomEvents(player, socket);
-	registerChatEvents(player, socket);
-	registerErrorEvents(player, socket);
-	registerDisconnectEvents(player, socket);
+    createAndAddPlayer(socket).match((player) => {
+        registerRoomEvents(player, socket);
+        registerChatEvents(player, socket);
+        registerErrorEvents(player, socket);
+        registerDisconnectEvents(player, socket);
+    }, (err) => {
+        socket.emit("ERROR", err);
+        socket.disconnect(true);
+    });
+	
 });
 
 httpServer.listen(PORT, () => {
