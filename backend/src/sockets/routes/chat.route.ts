@@ -1,4 +1,4 @@
-import { handleChatMessage } from "@controllers/sockets/chat.controller";
+import { handleChatMessage } from "../controllers/chat.controller";
 import { Player } from "@common/types/models/player.model";
 import { Socket } from "socket.io";
 

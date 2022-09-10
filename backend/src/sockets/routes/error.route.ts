@@ -1,4 +1,4 @@
-import { handleError } from "@controllers/sockets/error.controller";
+import { handleError } from "../controllers/error.controller";
 import { Player } from "@common/types/models/player.model";
 import { Socket } from "socket.io";
 

@@ -16,10 +16,10 @@
 		"baseUrl": "src",
 		"paths": {
 			"@core/*": ["./core/*"],
-			"@controllers/*": ["./controllers/*"],
+			"@api/*": ["./api/*"],
 			"@models/*": ["./models/*"],
 			"@services/*": ["./services/*"],
-			"@routes/*": ["./routes/*"],
+			"@sockets/*": ["./sockets/*"],
 			"@common/*": ["../../common/*"],
             "@settings": ["../settings.backend.json"],
 		}

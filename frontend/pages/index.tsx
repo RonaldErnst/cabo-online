@@ -1,51 +1,30 @@
-import { ClientServerEvents, ISocket, ServerClientEvents } from "@common/types/sockets";
-import { useSocket } from "@contexts/SocketContext";
-import type { NextPage } from "next";
-import { MouseEventHandler } from "react";
-import settings from "settings.frontend";
-import { io, Socket } from "socket.io-client";
+import { NextPage, GetServerSideProps, InferGetServerSidePropsType } from "next";
+import NavBar from "@components/NavBar";
+import { RoomClientData } from "@common/types/models/room.model";
 
-const socket: Socket<ServerClientEvents, ClientServerEvents> = io("http://localhost:4000", {
-    transports: ["websocket", "polling", "flashsocket"]
-});
-        
-socket.on("connect", () => {
-    console.log("Conntected");
-});
+const Home: NextPage = ({rooms}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+	return (
+		<div className="bg-slate-800 w-full h-full flex flex-col">
+			<NavBar />
+			<div className="flex flex-row w-full h-full">
+				<div className="grow flex flex-col justify-center items-center bg-slate-400">
+					Create Room Stuff
+				</div>
+				<div className="w-80 h-full justify-center"><div>Rooms</div></div>
+			</div>
+		</div>
+	);
+};
 
-socket.on("connect_error", (err: Error) => {
-    console.log(err);
-});
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+    // TODO API Req to WS server and get information about all rooms
+    const rooms: RoomClientData[] = [];
 
-socket.on("disconnect", (reason: string) => {
-    console.log(`Disconnected because`, reason)
-})
-
-socket.on("CREATE_ROOM", () => {
-    console.log("Server created room");
-});
-
-socket.on("CHAT", (message: string, playerId: string) => {
-    console.log(`Player ${playerId} sent a message:`, message);
-});
-
-socket.on("ERROR", (error: Error) => {
-    console.log(error);
-})
-
-const Home: NextPage = () => {
-
-    const onClickHandler:MouseEventHandler = (e) => {
-        e.preventDefault();
-    
-        socket.emit("CREATE_ROOM", "test123");
-    
-        socket.emit("CHAT", "Sending a test message");
-    }
-
-	return <div>
-        <button onClick={onClickHandler}>Click me</button>
-    </div>;
+	return {
+		props: {
+			rooms,
+		},
+	};
 };
 
 export default Home;

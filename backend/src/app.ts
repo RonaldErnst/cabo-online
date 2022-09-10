@@ -12,7 +12,7 @@ import {
 	registerRoomEvents,
 	registerErrorEvents,
 	registerDisconnectEvents,
-} from "@routes/sockets";
+} from "sockets";
 import settings from "./settings.backend";
 import { createAndAddPlayer } from "@services/player.service";
 
@@ -32,6 +32,9 @@ const serverSettings: Partial<ServerOptions> = {
 
 const app = express();
 const httpServer = createServer(app);
+
+app.use()
+
 const socketIO = new Server<
 	ClientServerEvents,
 	ServerClientEvents,

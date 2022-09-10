@@ -18,7 +18,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@contexts/*": ["./contexts/*"],
-			"@common/*": ["../common/*"]
+			"@common/*": ["../common/*"],
+            "@components/*": ["./components/*"],
 		}
 	},
 	"references": [{ "path": "../common" }],

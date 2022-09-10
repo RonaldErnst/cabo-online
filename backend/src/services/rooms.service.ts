@@ -1,8 +1,8 @@
-import { IError, RoomError } from "@common/types/errors";
+import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import {
 	Room,
-	RoomEventData,
+	RoomClientData,
 	RoomOptions,
 } from "@common/types/models/room.model";
 import socketIO from "app";
@@ -69,7 +69,7 @@ function joinRoom(roomId: string, player: Player): Result<null, IError> {
 	player.room = room;
 
 	// Tell all players in room that a new person joined
-	const roomEventData: RoomEventData = {
+	const roomEventData: RoomClientData = {
 		roomId,
 		isPrivate: room.options.isPrivate,
 		maxPlayerCount: room.options.maxPlayerCount,

@@ -13,7 +13,7 @@ export interface Room {
     options: RoomOptions
 }
 
-export interface RoomEventData {
+export interface RoomClientData {
     roomId: string;
     isPrivate: boolean;
     maxPlayerCount: number;

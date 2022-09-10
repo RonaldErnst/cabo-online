@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { IError } from "../errors";
 import { Player } from "../models/player.model";
-import { RoomEventData } from "../models/room.model";
+import { RoomClientData } from "../models/room.model";
 
 export interface ClientServerEvents  {
     CREATE_ROOM: (roomId: string) => void;
@@ -12,8 +12,8 @@ export interface ClientServerEvents  {
 }
 
 export interface ServerClientEvents {
-    CREATE_ROOM: (room: RoomEventData) => void;
-    JOIN_ROOM: (playerId: string, room: RoomEventData) => void;
+    CREATE_ROOM: (room: RoomClientData) => void;
+    JOIN_ROOM: (playerId: string, room: RoomClientData) => void;
     CHAT: (message: string, playerId: string) => void;
     GAME: (data: any) => void;
     ERROR: (err: IError) => void;
