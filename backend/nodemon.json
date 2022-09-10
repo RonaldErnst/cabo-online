@@ -1,6 +1,6 @@
 {
-	"watch": ["src", "../settings.json"],
-	"ext": ".ts,.js",
-	"ignore": ["**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
-    "exec": "node -r tsconfig-paths/register -r ts-node/register ./src/app.ts"
+  "watch": ["src", "../settings.json"],
+  "ext": ".ts,.js",
+  "ignore": ["**/*.test.ts", "**/*.spec.ts", ".git", "node_modules"],
+  "exec": "node -r tsconfig-paths/register -r ts-node/register ./src/app.ts"
 }

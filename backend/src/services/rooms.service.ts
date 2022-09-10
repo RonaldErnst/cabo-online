@@ -1,9 +1,9 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import {
-	Room,
-	RoomClientData,
-	RoomOptions,
+  Room,
+  RoomClientData,
+  RoomOptions,
 } from "@common/types/models/room.model";
 import socketIO from "app";
 import { err, ok, Result } from "neverthrow";
@@ -11,77 +11,94 @@ import { err, ok, Result } from "neverthrow";
 const rooms = new Map<string, Room>();
 
 function existsRoom(roomId: string) {
-	return rooms.has(roomId);
+  return rooms.has(roomId);
 }
 
 function addRoom(room: Room) {
-	rooms.set(room.roomId, room);
+  rooms.set(room.roomId, room);
 }
 
 function getRoom(roomId: string) {
-	return rooms.get(roomId);
+  return rooms.get(roomId);
 }
 
 function getAllRooms() {
-    return rooms.values();
+  return Array.from(rooms.values());
 }
 
 function createAndAddRoom(
-	roomId: string,
-	options: RoomOptions = {
-		isPrivate: false,
-		maxPlayerCount: 10,
-		password: null,
-	}
+  roomId: string,
+  options: RoomOptions = {
+    isPrivate: false,
+    maxPlayerCount: 10,
+    password: null,
+  }
 ): Result<Room, IError> {
-	if (existsRoom(roomId))
-		return err({
-			type: "RoomAlreadyExistsError",
-			message: `Room ${roomId} already exists`,
-		});
+  if (existsRoom(roomId))
+    return err({
+      type: "RoomAlreadyExistsError",
+      message: `Room ${roomId} already exists`,
+    });
 
-	const room: Room = {
-		roomId,
-		host: null,
-		playerSockets: new Array(),
-		options,
-	};
+  const room: Room = {
+    roomId,
+    host: null,
+    playerSockets: new Array(),
+    options,
+  };
 
-	addRoom(room);
+  addRoom(room);
 
-	// Tell all connected players about the new room
-	socketIO.emit("CREATE_ROOM", {
-		roomId,
-		isPrivate: options.isPrivate,
-		maxPlayerCount: options.maxPlayerCount,
-		currPlayerCount: 0,
-	});
+  // Tell all connected players about the new room
+  socketIO.emit("CREATE_ROOM", {
+    roomId,
+    isPrivate: options.isPrivate,
+    maxPlayerCount: options.maxPlayerCount,
+    currPlayerCount: 0,
+  });
 
-	return ok(room);
+  return ok(room);
 }
 
 function joinRoom(roomId: string, player: Player): Result<null, IError> {
-	const room = getRoom(roomId);
-	if (room === undefined)
-		return err({
-			type: "UnknownRoomError",
-			message: `Room ${roomId} does not exist`,
-		});
+  const room = getRoom(roomId);
+  if (room === undefined)
+    return err({
+      type: "UnknownRoomError",
+      message: `Room ${roomId} does not exist`,
+    });
 
-	room.playerSockets.push(player);
-	player.socket.join(roomId);
-	player.room = room;
+  room.playerSockets.push(player);
+  player.socket.join(roomId);
+  player.room = room;
 
-	// Tell all players in room that a new person joined
-	const roomEventData: RoomClientData = {
-		roomId,
-		isPrivate: room.options.isPrivate,
-		maxPlayerCount: room.options.maxPlayerCount,
-		currPlayerCount: room.playerSockets.length,
-	};
-	socketIO.in(roomId).emit("JOIN_ROOM", player.playerId, roomEventData);
+  // Tell all players in room that a new person joined
+  socketIO
+    .in(roomId)
+    .emit("JOIN_ROOM", player.playerId, transformRoomClientData(room));
 
-	return ok(null);
+  return ok(null);
 }
 
-export { createAndAddRoom, joinRoom , getAllRooms };
+interface NewType<T> {
+  value: T;
+}
+
+function transformRoomClientData(rooms: Room[]): RoomClientData[];
+function transformRoomClientData(room: Room): RoomClientData;
+function transformRoomClientData(
+  rooms: Room | Room[]
+): RoomClientData | RoomClientData[] {
+  if (Array.isArray(rooms)) {
+    return rooms.map((r) => transformRoomClientData(r));
+  } else {
+    return {
+      roomId: rooms.roomId,
+      isPrivate: rooms.options.isPrivate,
+      maxPlayerCount: rooms.options.maxPlayerCount,
+      currPlayerCount: rooms.playerSockets.length,
+    };
+  }
+}
+
+export { createAndAddRoom, joinRoom, getAllRooms, transformRoomClientData };

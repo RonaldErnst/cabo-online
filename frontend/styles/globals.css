@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 @layer base {
-    html, body, :root, #__next {
-        @apply p-0 m-0 w-screen h-screen
-    }
+  html,
+  body,
+  :root,
+  #__next {
+    @apply p-0 m-0 w-screen h-screen;
+  }
 }

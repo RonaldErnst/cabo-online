@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "daisyui": "^2.25.0",
+    "formik": "^2.2.9",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "socket.io-client": "^4.5.1"
+    "socket.io-client": "^4.5.1",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@types/node": "18.7.14",
