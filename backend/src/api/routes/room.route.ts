@@ -1,4 +1,5 @@
-import express, { Router } from "express";
+import { handleGetAllRooms } from "@api/controllers";
+import express from "express";
 
 const roomRouter = express.Router();
 

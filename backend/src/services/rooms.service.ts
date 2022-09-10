@@ -22,6 +22,10 @@ function getRoom(roomId: string) {
 	return rooms.get(roomId);
 }
 
+function getAllRooms() {
+    return rooms.values();
+}
+
 function createAndAddRoom(
 	roomId: string,
 	options: RoomOptions = {
@@ -80,4 +84,4 @@ function joinRoom(roomId: string, player: Player): Result<null, IError> {
 	return ok(null);
 }
 
-export { createAndAddRoom, joinRoom };
+export { createAndAddRoom, joinRoom , getAllRooms };

@@ -1,4 +1,4 @@
-import { handleDisconnect } from "../controllers/disconnect.controller";
+import { handleDisconnect } from "@sockets/controllers";
 import { Player } from "@common/types/models/player.model";
 import { Socket } from "socket.io";
 

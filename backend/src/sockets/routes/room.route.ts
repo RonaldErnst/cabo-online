@@ -1,7 +1,7 @@
 import {
 	handleCreateRoom,
 	handleJoinRoom,
-} from "../controllers/room.controller";
+} from "@sockets/controllers";
 import { Player } from "@common/types/models/player.model";
 import { Socket } from "socket.io";
 
