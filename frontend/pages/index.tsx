@@ -1,5 +1,5 @@
 import { NextPage } from "next";
-import { NavBar, CreateJoinRoom, RoomList } from "@components/index";
+import { NavBar, CreateJoinRoom, RoomList } from "@components";
 
 const Home: NextPage = () => {
   return (

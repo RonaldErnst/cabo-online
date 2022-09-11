@@ -20,6 +20,8 @@
       "@models/*": ["./models/*"],
       "@services/*": ["./services/*"],
       "@sockets/*": ["./sockets/*"],
+      "@types": ["./types"],
+      "@types/*": ["./types/*"],
       "@common/*": ["../../common/*"],
       "@settings": ["../settings.backend.json"]
     }

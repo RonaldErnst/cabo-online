@@ -1,13 +1,13 @@
 import { Player } from "@common/types/models/player.model";
-import { ISocket } from "@common/types/sockets";
+import { IServerSocket } from "@types";
 
-function handleDisconnect(player: Player, socket: ISocket) {
-  return (reason: string) => {
-    console.log(
-      `Player ${player.playerId} is trying to disconnect`,
-      `Reason: ${reason}`
-    );
-  };
+function handleDisconnect(player: Player, socket: IServerSocket) {
+	return (reason: string) => {
+		console.log(
+			`Player ${player.playerId} is trying to disconnect`,
+			`Reason: ${reason}`
+		);
+	};
 }
 
 export { handleDisconnect };

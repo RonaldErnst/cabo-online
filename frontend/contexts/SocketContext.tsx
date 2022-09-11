@@ -1,56 +1,73 @@
 import {
-  createContext,
-  FC,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
+	createContext,
+	FC,
+	PropsWithChildren,
+	useCallback,
+	useContext,
+    useEffect
 } from "react";
-import { io, ManagerOptions, Socket, SocketOptions } from "socket.io-client";
-import { ServerClientEvents, ClientServerEvents } from "@common/types/sockets";
+import { io, ManagerOptions, SocketOptions } from "socket.io-client";
 import settings from "settings.frontend";
+import { IClientSocket } from "@types";
 
-interface ISocketProvider {
-  socket: Socket<ServerClientEvents, ClientServerEvents> | null;
+interface IServerSocketProvider {
+	socket: IClientSocket;
 }
 
-const SocketContext = createContext<ISocketProvider | null>(null);
+function connectSocket(addr: string) {
+	const socketOptions: Partial<ManagerOptions & SocketOptions> = {
+		transports: ["websocket", "polling"],
+	};
+
+	const newSocket = io(addr, socketOptions);
+	return newSocket;
+}
+
+const socket: IClientSocket = connectSocket(settings.socketServer);
+
+const SocketContext = createContext<IServerSocketProvider>({
+	socket,
+});
 
 export function useSocket() {
-  const ctx = useContext(SocketContext);
-
-  if (ctx === null) throw new Error("Socket context not initialized"); // TODO proper Error
-
-  return ctx;
+	const ctx = useContext(SocketContext);
+	return ctx;
 }
 
 export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [socket, setSocket] = useState<Socket<
-    ServerClientEvents,
-    ClientServerEvents
-  > | null>(null);
 
-  useEffect(() => {
-    if (socket === null) {
-      const serverAddr = `http://localhost:${settings.wsPort}`;
-      const socketOptions: Partial<ManagerOptions & SocketOptions> = {
-        transports: ["websocket", "polling"],
-      };
+    const connErrorListener = useCallback(
+        (err: Error) => {
+            console.log("Couldn't connect:", err);
+        },
+      [],
+    )
 
-      const newSocket = io(serverAddr, socketOptions);
-      setSocket(newSocket);
-    }
+    const disconnectListener = useCallback(
+        (reason: string) => {
+            console.log("Disconnecting:", reason);
+        },
+      [],
+    )
 
-    return () => {
-      if (socket !== null) socket.close();
-    };
-  }, [socket]);
+    useEffect(() => {
+      socket.on("connect_error", connErrorListener);
+      socket.on("disconnect", disconnectListener)
+    
+      return () => {
+        socket.off("connect_error", connErrorListener);
+        socket.off("disconnect", disconnectListener)
+      }
+    }, [connErrorListener, disconnectListener])
+    
 
-  const value = {
-    socket,
-  };
+	const value = {
+		socket,
+	};
 
-  return (
-    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
-  );
+	return (
+		<SocketContext.Provider value={value}>
+			{children}
+		</SocketContext.Provider>
+	);
 };

@@ -49,14 +49,6 @@ function createAndAddRoom(
 
   addRoom(room);
 
-  // Tell all connected players about the new room
-  socketIO.emit("CREATE_ROOM", {
-    roomId,
-    isPrivate: options.isPrivate,
-    maxPlayerCount: options.maxPlayerCount,
-    currPlayerCount: 0,
-  });
-
   return ok(room);
 }
 
@@ -72,33 +64,7 @@ function joinRoom(roomId: string, player: Player): Result<null, IError> {
   player.socket.join(roomId);
   player.room = room;
 
-  // Tell all players in room that a new person joined
-  socketIO
-    .in(roomId)
-    .emit("JOIN_ROOM", player.playerId, transformRoomClientData(room));
-
   return ok(null);
 }
 
-interface NewType<T> {
-  value: T;
-}
-
-function transformRoomClientData(rooms: Room[]): RoomClientData[];
-function transformRoomClientData(room: Room): RoomClientData;
-function transformRoomClientData(
-  rooms: Room | Room[]
-): RoomClientData | RoomClientData[] {
-  if (Array.isArray(rooms)) {
-    return rooms.map((r) => transformRoomClientData(r));
-  } else {
-    return {
-      roomId: rooms.roomId,
-      isPrivate: rooms.options.isPrivate,
-      maxPlayerCount: rooms.options.maxPlayerCount,
-      currPlayerCount: rooms.playerSockets.length,
-    };
-  }
-}
-
-export { createAndAddRoom, joinRoom, getAllRooms, transformRoomClientData };
+export { createAndAddRoom, joinRoom, getRoom, getAllRooms };
