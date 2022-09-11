@@ -1,7 +1,7 @@
 import { handleChatMessage } from "@sockets/controllers";
 import { Player } from "@common/types/models/player.model";
-import { Socket } from "socket.io";
+import { IServerSocket } from "@types";
 
-export default function registerChatEvents(player: Player, socket: Socket) {
+export default function registerChatEvents(player: Player, socket: IServerSocket) {
   socket.on("CHAT", handleChatMessage(player, socket));
 }

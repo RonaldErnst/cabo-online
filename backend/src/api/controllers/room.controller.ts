@@ -12,13 +12,14 @@ const handleGetAllRooms: RequestHandler<{}, RoomClientData[]> = async (
 	res.status(200).json(transformRoomClientData(rooms));
 };
 
-const handleGetSingleRoom: RequestHandler<{roomId: string}, RoomClientData | null> = async (
+const handleGetSingleRoom: RequestHandler<{}, RoomClientData | null, {}, {roomId: string}> = async (
 	req,
 	res,
 	next
 ) => {
-    const roomId = req.params.roomId;
+    const { roomId } = req.query;
     const room = getRoom(roomId);
+
     res.status(200).json(room? transformRoomClientData(room) : null);
 };
 

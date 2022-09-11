@@ -1,27 +1,24 @@
-import {
-	Formik,
-	Form,
-	Field,
-	FormikHelpers,
-	useFormik,
-	useFormikContext,
-} from "formik";
+import { IError } from "@common/types/errors";
+import { RoomClientData } from "@common/types/models/room.model";
+import { useSocket } from "@contexts/SocketContext";
+import axios from "axios";
+import { Field, Form, Formik, FormikHelpers } from "formik";
+import { useRouter } from "next/router";
+import { FC, useRef } from "react";
+import existsRoom from "utils/existsRoom";
 import * as Yup from "yup";
 import ErrorAlert from "./ErrorAlert";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef } from "react";
-import { useSocket } from "@contexts/SocketContext";
-import { RoomClientData } from "@common/types/models/room.model";
-import { IError } from "@common/types/errors";
-import axios from "axios";
-import settings from "settings.frontend";
+
+interface Props {
+    error: string;
+}
 
 interface FormValues {
 	roomId: string;
 	shouldCreateRoom: boolean;
 }
 
-const CreateJoinRoom = () => {
+const CreateJoinRoom: FC<Props> = ({ error }) => {
 	const { socket } = useSocket();
 	const inputRef = useRef<HTMLElement>(null);
 	const router = useRouter();
@@ -44,11 +41,6 @@ const CreateJoinRoom = () => {
 		roomId: string,
 		{ setFieldError }: FormikHelpers<FormValues>
 	) => {
-		const removeListeners = () => {
-			socket.off("ERROR", errorListener);
-			socket.off("CREATE_ROOM", createRoomListener);
-		};
-
 		const errorListener = (err: IError) => {
 			removeListeners();
 
@@ -64,6 +56,11 @@ const CreateJoinRoom = () => {
 			router.push(`/room/${room.roomId}`);
 		};
 
+		const removeListeners = () => {
+			socket.off("ERROR", errorListener);
+			socket.off("CREATE_ROOM", createRoomListener);
+		};
+
 		socket.once("ERROR", errorListener);
 		socket.once("CREATE_ROOM", createRoomListener);
 		socket.emit("CREATE_ROOM", roomId);
@@ -75,18 +72,7 @@ const CreateJoinRoom = () => {
 	) => {
 		try {
 			// Check if room exists
-			const { data: room } = await axios.get<RoomClientData | null>(
-				`${settings.socketServer}/room`,
-				{
-					headers: {
-						Accept: "application/json",
-					},
-					timeout: 10000,
-					params: {
-						roomId,
-					},
-				}
-			);
+			const room = await existsRoom(roomId);
 
 			// If room doesn't exist, show Error
 			if (room === null) {
@@ -94,6 +80,12 @@ const CreateJoinRoom = () => {
 				return;
 			}
 
+            if(room.currPlayerCount >= room.maxPlayerCount) {
+                setFieldError("roomId", "Room already full");
+                return;
+            }
+
+			// Room exists, join room
 			router.push(`/room/${roomId}`);
 		} catch (err) {
 			if (axios.isAxiosError(err)) {
@@ -118,6 +110,7 @@ const CreateJoinRoom = () => {
 
 		actions.setSubmitting(false);
 	}
+    
 
 	return (
 		<Formik<FormValues>
