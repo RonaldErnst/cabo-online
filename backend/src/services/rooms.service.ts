@@ -2,13 +2,16 @@ import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { Room, RoomOptions } from "@common/types/models/room.model";
 import { err, ok, Result } from "neverthrow";
+import settings from "settings.backend";
 
 const rooms = new Map<string, Room>();
+
+//const cleanRoomsInterval = setInterval(cleanRooms, settings.cleanRoomsInterval);
 
 // Mock data
 rooms.set("test123", {
 	host: null,
-	playerSockets: [],
+	players: [],
 	roomId: "test123",
 	options: {
 		isPrivate: false,
@@ -18,7 +21,7 @@ rooms.set("test123", {
 });
 rooms.set("anotherRoom", {
 	host: null,
-	playerSockets: [],
+	players: [],
 	roomId: "anotherRoom",
 	options: {
 		isPrivate: true,
@@ -26,6 +29,15 @@ rooms.set("anotherRoom", {
 		password: "password",
 	},
 });
+
+function cleanRooms() {
+	const idsForDeletion: string[] = [];
+	rooms.forEach((room, roomId) => {
+		if (room.players.length === 0) idsForDeletion.push(roomId);
+	});
+
+	idsForDeletion.forEach((id) => rooms.delete(id));
+}
 
 function existsRoom(roomId: string) {
 	return rooms.has(roomId);
@@ -60,7 +72,7 @@ function createAndAddRoom(
 	const room: Room = {
 		roomId,
 		host: null,
-		playerSockets: new Array(),
+		players: new Array(),
 		options,
 	};
 
@@ -69,7 +81,11 @@ function createAndAddRoom(
 	return ok(room);
 }
 
-function joinRoom(roomId: string, player: Player): Result<Room, IError> {
+function joinRoom(
+	roomId: string,
+	password: string | null,
+	player: Player
+): Result<Room, IError> {
 	const room = getRoom(roomId);
 	if (room === undefined)
 		return err({
@@ -77,11 +93,41 @@ function joinRoom(roomId: string, player: Player): Result<Room, IError> {
 			message: `Room ${roomId} does not exist`,
 		});
 
-	room.playerSockets.push(player);
+	if (player.room === room)
+		return err({
+			type: "AlreadyInRoomError",
+			message: `Player is already in a room`,
+		});
+
+	if (room.options.isPrivate && password != room.options.password)
+		return err({
+			type: "RoomPwMismatchError",
+			message: `Password does not match`,
+		});
+
+	room.players.push(player);
 	player.socket.join(roomId);
 	player.room = room;
 
 	return ok(room);
 }
 
-export { createAndAddRoom, joinRoom, getRoom, getAllRooms };
+function leaveRoom(player: Player): Result<Room, IError> {
+	const room = player.room;
+
+	if (room === null)
+		return err({
+			type: "PlayerNotInRoomError",
+			message: `Player is not in any room`,
+		});
+
+	room.players = room.players.filter((p) => p != player);
+	player.room = null;
+	player.socket.leave(room.roomId);
+
+	if (settings.removeEmptyRoom && room.players.length === 0) rooms.delete(room.roomId);
+
+	return ok(room);
+}
+
+export { createAndAddRoom, joinRoom, getRoom, getAllRooms, leaveRoom };

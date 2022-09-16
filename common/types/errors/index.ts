@@ -1,8 +1,11 @@
 export type UnknownRoomError = "UnknownRoomError";
 export type RoomAlreadyExistsError = "RoomAlreadyExistsError";
 export type NoRoomChatError = "NoRoomChatError";
+export type RoomPwMismatchError = "RoomPwMismatchError";
+export type PlayerNotInRoomError = "PlayerNotInRoomError";
+export type AlreadyInRoomError = "AlreadyInRoomError"
 
-export type RoomError = "RoomError" | UnknownRoomError | RoomAlreadyExistsError;
+export type RoomError = "RoomError" | UnknownRoomError | RoomAlreadyExistsError | RoomPwMismatchError | AlreadyInRoomError | PlayerNotInRoomError;
 export type GameError = "GameError";
 export type ChatError = "ChatError" | NoRoomChatError;
 export type PlayerAlreadyExistsError = "PlayerAlreadyExistsError";

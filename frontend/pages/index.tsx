@@ -1,5 +1,5 @@
 import { RoomClientData } from "@common/types/models/room.model";
-import { CreateJoinRoom, NavBar, RoomList } from "@components";
+import { Home } from "@components";
 import axios from "axios";
 import { GetServerSideProps, NextPage } from "next";
 import settings from "settings.frontend";
@@ -9,20 +9,9 @@ interface Props {
 	error: string;
 }
 
-const Home: NextPage<Props> = ({ rooms, error }) => {
-	return (
-		<div className="bg-slate-600 w-full h-full flex flex-col">
-			<NavBar />
-			<div className="flex flex-row w-full h-full">
-				<div className="grow flex justify-center items-center">
-					<CreateJoinRoom error={error} />
-				</div>
-				<div className="w-80 h-full justify-center">
-					<RoomList rooms={rooms} />
-				</div>
-			</div>
-		</div>
-	);
+// TODO display error
+const App: NextPage<Props> = ({ rooms, error }) => {
+	return <Home rooms={rooms} error={error}/>;
 };
 
 export const getServerSideProps: GetServerSideProps<{
@@ -43,7 +32,7 @@ export const getServerSideProps: GetServerSideProps<{
 		rooms = data;
 	} catch (err) {
         // Something went wrong with the request
-		console.log(err);
+		console.error(err);
 	}
 
 	return {
@@ -53,4 +42,4 @@ export const getServerSideProps: GetServerSideProps<{
 	};
 };
 
-export default Home;
+export default App;

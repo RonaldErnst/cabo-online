@@ -8,7 +8,7 @@ export interface RoomOptions {
 
 export interface Room {
   roomId: string;
-  playerSockets: Array<Player>;
+  players: Array<Player>;
   host: Player | null;
   options: RoomOptions;
 }

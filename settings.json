@@ -2,7 +2,9 @@
     "backend": {
         "port": 4000,
         "pingInterval": 5000,
-        "pingTimeout": 20000
+        "pingTimeout": 20000,
+        "cleanRoomsInterval": 60000,
+        "removeEmptyRoom": false
     },
     "frontend": {
         
