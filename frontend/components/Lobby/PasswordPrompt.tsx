@@ -1,25 +1,40 @@
 import ErrorAlert from "@components/ErrorAlert";
 import { useSocket } from "@contexts/SocketContext";
 import { Field, Form, Formik, FormikHelpers } from "formik";
-import { useRef } from "react";
-import * as Yup from "yup";
+import { useRouter } from "next/router";
+import { FC, useRef } from "react";
+import checkPassword from "utils/checkPassword";
+
+interface Props {
+    roomId: string;
+}
 
 interface FormValues {
 	password: string;
 }
 
-function PasswordPrompt() {
+const PasswordPrompt: FC<Props> = ({ roomId }) => {
     const socket = useSocket();
+    const router = useRouter();
 	const inputRef = useRef<HTMLElement>(null);
 	const initialValues = { password: "" };
 
-	const handleSubmit = (
-		values: FormValues,
-        {setSubmitting}: FormikHelpers<FormValues>
+	const handleSubmit = async (
+		{ password }: FormValues,
+        {setSubmitting, setFieldError}: FormikHelpers<FormValues>
 	) => {
         setSubmitting(true);
 
-        // TODO check password
+        const { ok: isCorrect, error } = await checkPassword(roomId, password);
+
+        if(isCorrect) {
+            router.replace(`/room/${roomId}?pw=${password}`);
+        } else {
+            if(error === undefined)
+                setFieldError("password", "Unexpected error");
+            else
+                setFieldError("password", error.message);
+        }
 
         setSubmitting(false);
     };

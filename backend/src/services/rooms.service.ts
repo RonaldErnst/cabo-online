@@ -101,7 +101,7 @@ function joinRoom(
 
 	if (room.options.isPrivate && password != room.options.password)
 		return err({
-			type: "RoomPwMismatchError",
+			type: "WrongPasswordRoomError",
 			message: `Password does not match`,
 		});
 
@@ -125,9 +125,41 @@ function leaveRoom(player: Player): Result<Room, IError> {
 	player.room = null;
 	player.socket.leave(room.roomId);
 
-	if (settings.removeEmptyRoom && room.players.length === 0) rooms.delete(room.roomId);
+	if (settings.removeEmptyRoom && room.players.length === 0)
+		rooms.delete(room.roomId);
 
 	return ok(room);
 }
 
-export { createAndAddRoom, joinRoom, getRoom, getAllRooms, leaveRoom };
+function checkPassword(
+	roomId: string,
+	password: string
+): Result<boolean, IError> {
+	const room = getRoom(roomId);
+
+	if (room === undefined)
+		return err({ type: "UnknownRoomError", message: "Room not found" });
+
+	if (!room.options.isPrivate)
+		return err({
+			type: "NotPrivateRoomError",
+			message: "Room is not private",
+		});
+
+	if (room.options.password != password)
+		return err({
+			type: "WrongPasswordRoomError",
+			message: "Wrong password",
+		});
+
+	return ok(true);
+}
+
+export {
+	createAndAddRoom,
+	joinRoom,
+	getRoom,
+	getAllRooms,
+	leaveRoom,
+	checkPassword,
+};

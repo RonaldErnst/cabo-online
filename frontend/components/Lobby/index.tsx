@@ -65,7 +65,7 @@ const Lobby: FC<Props> = ({ roomId, requiresPassword, password }) => {
 	}, [password, requiresPassword, roomId, socket]);
 
     if(requiresPassword && password === null)
-        return <PasswordPrompt />;
+        return <PasswordPrompt roomId={roomId} />;
 
 	return <div>{roomId}</div>;
 };
