@@ -38,12 +38,12 @@ function handleJoinRoom(
 	password: string | null
 ) {
 	joinRoom(roomId, password, player).match(
-		() => {
+		(room) => {
 			console.log(`Player ${player.playerId} joined room ${roomId}`);
 
 			socketIO.emit("ROOM", {
-				type: "JOIN_ROOM",
-				roomId,
+				type: "CHANGE_ROOM",
+				room: transformRoomClientData(room)
 			});
 		},
 		(err) => {
@@ -55,12 +55,12 @@ function handleJoinRoom(
 
 function handleLeaveRoom(player: Player, socket: IServerSocket) {
 	leaveRoom(player).match(
-		(roomId) => {
-			console.log(`Player ${player.playerId} left room ${roomId}`);
+		(room) => {
+			console.log(`Player ${player.playerId} left room ${room.roomId}`);
 
 			socketIO.emit("ROOM", {
-				type: "LEAVE_ROOM",
-				roomId: roomId,
+				type: "CHANGE_ROOM",
+				room: transformRoomClientData(room)
 			});
 		},
 		(err) => {

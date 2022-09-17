@@ -135,7 +135,7 @@ function joinRoom(
 	roomId: string,
 	password: string | null,
 	player: Player
-): Result<null, IError> {
+): Result<Room, IError> {
 	const room = getRoom(roomId);
 	if (room === undefined)
 		return err({
@@ -159,7 +159,7 @@ function joinRoom(
 	player.socket.join(roomId);
 	player.room = room;
 
-	return ok(null);
+	return ok(room);
 }
 
 /**
@@ -167,7 +167,7 @@ function joinRoom(
  * @param player 
  * @returns 
  */
-function leaveRoom(player: Player): Result<string, IError> {
+function leaveRoom(player: Player): Result<Room, IError> {
 	const room = player.room;
 
 	if (room === null)
@@ -186,7 +186,7 @@ function leaveRoom(player: Player): Result<string, IError> {
 		socketIO.emit("ROOM", { type: "DELETE_ROOM", roomId: room.roomId });
 	}
 
-	return ok(room.roomId);
+	return ok(room);
 }
 
 /**

@@ -11,16 +11,6 @@ export interface DeleteRoomEvent extends IEventType {
 	roomId: string;
 }
 
-export interface JoinRoomEvent extends IEventType {
-	type: "JOIN_ROOM";
-	roomId: string;
-}
-
-export interface LeaveRoomEvent extends IEventType {
-	type: "LEAVE_ROOM";
-	roomId: string;
-}
-
 export interface ChangeRoomEvent extends IEventType {
     type: "CHANGE_ROOM";
     room: RoomClientData;
@@ -29,6 +19,4 @@ export interface ChangeRoomEvent extends IEventType {
 export type RoomServerClientEvent =
 	| CreateRoomEvent
 	| DeleteRoomEvent
-	| JoinRoomEvent
-	| LeaveRoomEvent
     | ChangeRoomEvent;
