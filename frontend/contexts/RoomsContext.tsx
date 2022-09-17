@@ -31,12 +31,14 @@ export const RoomsProvider: FC<
 	const roomListener = useCallback((roomEvent: RoomServerClientEvent) => {
 		switch (roomEvent.type) {
 			case "CREATE_ROOM": // A room got created, add to room list
+				console.log(`Room ${roomEvent.room.roomId} got created`);
 				setRooms((prevRooms) => {
 					return [...prevRooms, roomEvent.room];
 				});
 				break;
 
 			case "CHANGE_ROOM": // A rooms settings got changed, display new settings
+				console.log(`Room ${roomEvent.room.roomId} changed`);
 				setRooms((prevRooms) => {
 					const updRooms = [...prevRooms];
 					updRooms.map((r) => {
@@ -49,6 +51,7 @@ export const RoomsProvider: FC<
 				break;
 
 			case "DELETE_ROOM": // A room got deleted, remove from room list
+				console.log(`Room ${roomEvent.roomId} was removed`);
 				setRooms((prevRooms) => {
 					return prevRooms.filter(
 						(r) => r.roomId != roomEvent.roomId
@@ -57,6 +60,7 @@ export const RoomsProvider: FC<
 				break;
 
 			case "JOIN_ROOM": // A player joined a room, update room
+				console.log(`A player joined room ${roomEvent.roomId}`);
 				setRooms((prevRooms) => {
 					const updRooms = [...prevRooms];
 					updRooms.map((r) => {
@@ -69,7 +73,7 @@ export const RoomsProvider: FC<
 				break;
 
 			case "LEAVE_ROOM": // A player left a room, update room
-                console.log(`A player left room ${roomEvent.roomId}`); 
+				console.log(`A player left room ${roomEvent.roomId}`);
 				setRooms((prevRooms) => {
 					const updRooms = [...prevRooms];
 					updRooms.map((r) => {
