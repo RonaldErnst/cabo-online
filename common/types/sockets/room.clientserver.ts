@@ -3,6 +3,19 @@ interface CreateRoomEvent {
 	roomId: string;
 }
 
+type ChangeRoomSettingEvent  = {
+	type: "CHANGE_ROOM_SETTING";
+	setting: "isPrivate";
+    value: {
+        isPrivate: boolean;
+        password: string;
+    };
+} | {
+    type: "CHANGE_ROOM_SETTING";
+    setting: "maxPlayerCount";
+    value: number;
+}
+
 interface JoinRoomEvent {
 	type: "JOIN_ROOM";
 	roomId: string;
@@ -15,5 +28,6 @@ interface LeaveRoomEvent {
 
 export type RoomClientServerEvent =
 	| CreateRoomEvent
+    | ChangeRoomSettingEvent
 	| JoinRoomEvent
 	| LeaveRoomEvent;
