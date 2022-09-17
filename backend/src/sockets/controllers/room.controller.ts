@@ -3,7 +3,6 @@ import { RoomClientServerEvent } from "@common/types/sockets/";
 import { createAndAddRoom, joinRoom, leaveRoom } from "@services/rooms.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
-import transformPlayerClientData from "utils/transformPlayerClientData";
 import transformRoomClientData from "utils/transformRoomClientData";
 
 function handleCreateRoom(
@@ -39,10 +38,10 @@ function handleJoinRoom(
 	password: string | null
 ) {
 	joinRoom(roomId, password, player).match(
-		(room) => {
-			console.log(`Player ${player.playerId} joined room ${room.roomId}`);
+		() => {
+			console.log(`Player ${player.playerId} joined room ${roomId}`);
 
-			socketIO.in(roomId).emit("ROOM", {
+			socketIO.emit("ROOM", {
 				type: "JOIN_ROOM",
 				roomId,
 			});
@@ -59,9 +58,9 @@ function handleLeaveRoom(player: Player, socket: IServerSocket) {
 		(roomId) => {
 			console.log(`Player ${player.playerId} left room ${roomId}`);
 
-			socketIO.in(roomId).emit("ROOM", {
+			socketIO.emit("ROOM", {
 				type: "LEAVE_ROOM",
-                roomId: roomId
+				roomId: roomId,
 			});
 		},
 		(err) => {
@@ -71,7 +70,10 @@ function handleLeaveRoom(player: Player, socket: IServerSocket) {
 	);
 }
 
-export default function handleRoomEvents(player: Player, socket: IServerSocket) {
+export default function handleRoomEvents(
+	player: Player,
+	socket: IServerSocket
+) {
 	return (roomEvent: RoomClientServerEvent) => {
 		switch (roomEvent.type) {
 			case "CREATE_ROOM":
@@ -87,6 +89,9 @@ export default function handleRoomEvents(player: Player, socket: IServerSocket) 
 					roomEvent.roomId,
 					roomEvent.password
 				);
+				break;
+			case "CHANGE_ROOM_SETTING":
+				// TODO: implement changing settings
 				break;
 			default:
 				socket.emit("ERROR", {
