@@ -1,18 +1,18 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
-import { Room, RoomOptions } from "@common/types/models/room.model";
+import { Room, RoomSettings } from "@common/types/models/room.model";
 import socketIO from "app";
 import { err, ok, Result } from "neverthrow";
 import settings from "settings.backend";
 
 /**
  * Rooms Map
- * 
+ *
  * Maps a roomId to a room
  */
 const rooms = new Map<string, Room>();
 
-/** 
+/**
  * Create Interval for periodic room cleanup
  */
 //const cleanRoomsInterval = setInterval(cleanRooms, settings.cleanRoomsInterval);
@@ -41,7 +41,7 @@ rooms.set("anotherRoom", {
 
 /**
  * Function to clean up all currently existing rooms
- * 
+ *
  * All dirty rooms get cleaned up.
  * A room is dirty when it is dirty when it still exists in the rooms map
  * but has no connected players
@@ -63,7 +63,7 @@ function cleanRooms() {
 
 /**
  * Checks if a given room exists
- * @param roomId 
+ * @param roomId
  * @returns true if the room exists
  */
 function existsRoom(roomId: string) {
@@ -72,14 +72,14 @@ function existsRoom(roomId: string) {
 
 /**
  * Adds a given room to the room map
- * @param room 
+ * @param room
  */
 function addRoom(room: Room) {
 	rooms.set(room.roomId, room);
 }
 
 /**
- * @param roomId 
+ * @param roomId
  * @returns Room Object to a given roomId if it exists
  */
 function getRoom(roomId: string) {
@@ -95,13 +95,13 @@ function getAllRooms() {
 
 /**
  * Helper function to create and add a room to the rooms map
- * @param roomId 
- * @param options 
+ * @param roomId
+ * @param options
  * @returns newly created Room object
  */
 function createAndAddRoom(
 	roomId: string,
-	options: RoomOptions = {
+	options: RoomSettings = {
 		isPrivate: false,
 		maxPlayerCount: 10,
 		password: null,
@@ -127,9 +127,9 @@ function createAndAddRoom(
 
 /**
  * Helper function to let a given player join a given room
- * @param roomId 
- * @param password 
- * @param player 
+ * @param roomId
+ * @param password
+ * @param player
  */
 function joinRoom(
 	roomId: string,
@@ -164,8 +164,8 @@ function joinRoom(
 
 /**
  * Helper function to let a player leave their room
- * @param player 
- * @returns 
+ * @param player
+ * @returns
  */
 function leaveRoom(player: Player): Result<Room, IError> {
 	const room = player.room;
@@ -191,8 +191,8 @@ function leaveRoom(player: Player): Result<Room, IError> {
 
 /**
  * Checks if the given password matches a rooms password
- * @param roomId 
- * @param password 
+ * @param roomId
+ * @param password
  * @returns true if the password match
  */
 function checkPassword(

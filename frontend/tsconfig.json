@@ -25,7 +25,8 @@
 			"@components/*": ["./components/*"],
 			"@types": ["./types"],
 			"@types/*": ["./types/*"]
-		}
+		},
+        "typeRoots": ["./node_modules/@types", "./src/types"]
 	},
 	"references": [{ "path": "../common" }],
 	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../settings.json"],

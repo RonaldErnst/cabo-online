@@ -130,6 +130,7 @@ const CreateJoinRoom = () => {
 					handleSubmit,
 					isSubmitting,
 					errors,
+                    values: { roomId },
 					setFieldError,
 				}) => (
 					<Form className="flex flex-col justify-center items-center gap-4 bg-slate-600 p-16 rounded-xl drop-shadow-lg">

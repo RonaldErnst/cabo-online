@@ -1,6 +1,6 @@
 import { Player } from "./player.model";
 
-export interface RoomOptions {
+export interface RoomSettings {
 	isPrivate: boolean;
 	password: string | null;
 	maxPlayerCount: number;
@@ -10,7 +10,7 @@ export interface Room {
 	roomId: string;
 	players: Array<Player>;
 	host: Player | null;
-	options: RoomOptions;
+	options: RoomSettings;
 }
 
 export interface RoomClientData {

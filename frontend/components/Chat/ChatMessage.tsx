@@ -7,7 +7,7 @@ interface Props {
 
 const ChatMessage: FC<Props> = ({ message }) => {
   return (
-    <div>{!message.isSystemMessage? message.player.nickname : ""}: {message.text}</div>
+    <div className=''>{!message.isSystemMessage? message.player.nickname : ""}: {message.text}</div>
   )
 }
 

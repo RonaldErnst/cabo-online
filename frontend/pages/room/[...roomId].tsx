@@ -1,16 +1,30 @@
+import { RoomSettings } from "@common/types/models/room.model";
 import { Lobby } from "@components";
 import { GetServerSideProps } from "next";
 import { FC } from "react";
 import existsRoom from "utils/existsRoom";
+import getDefaultRoomSettings from "utils/getDefaultRoomSettings";
 
 interface Props {
 	roomId: string;
 	requiresPassword: boolean;
 	password: string | null;
+	defaultSettings: RoomSettings;
 }
 
-const RoomPage: FC<Props> = ({ roomId, requiresPassword, password }) => {
-    return <Lobby roomId={roomId} requiresPassword={requiresPassword} password={password} />;
+const RoomPage: FC<Props> = ({
+	roomId,
+	requiresPassword,
+	password,
+	defaultSettings,
+}) => {
+	const data = {
+		roomId,
+		requiresPassword,
+		password,
+		defaultSettings,
+	};
+	return <Lobby data={data} />;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -48,20 +62,22 @@ export const getServerSideProps: GetServerSideProps = async ({
 				},
 			};
 
-		// Room exists, check for password
+		// Room exists, get default room settings
+        const defaultSettings = await getDefaultRoomSettings();
 
-		// If room is public, let
+		// If room is public, let player join
 		if (!room.isPrivate)
 			return {
 				props: {
 					roomId: room.roomId,
 					requiresPassword: false,
 					password: null,
+                    defaultSettings
 				},
 			};
 
 		// Room requires password, check if password passed as parameter
-		// No password given, prompt password
+		// No password given, prompt the password
 		const { pw } = query;
 
 		if (pw === undefined)
@@ -70,6 +86,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: true,
 					password: null,
+                    defaultSettings
 				},
 			};
 
@@ -78,6 +95,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 				roomId: room.roomId,
 				requiresPassword: true,
 				password: Array.isArray(pw) ? pw[0] : pw,
+                defaultSettings
 			},
 		};
 	} catch (err) {

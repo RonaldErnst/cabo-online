@@ -1,5 +1,6 @@
 import { useChat } from "@contexts/ChatContext";
 import { Field, Form, Formik, FormikHelpers } from "formik";
+import { useRef } from "react";
 import validateChatMessage from "utils/validateChatMessage";
 import ChatMessage from "./ChatMessage";
 
@@ -9,6 +10,7 @@ interface FormValues {
 
 const Chat = () => {
 	const { messages, sendMessage } = useChat();
+    const inputRef = useRef<HTMLElement>(null);
 	const initialValues = {
 		message: "",
 	};
@@ -53,7 +55,7 @@ const Chat = () => {
 				}) => (
 					<Form className="flex flex-row justify-center items-center gap-4">
 						<Field // TODO: display error with red highlight and icon with hover
-							//innerRef={inputRef}
+							innerRef={inputRef}
 							// TODO: validate message, trim, remove linebreaks, etc
 							name="message"
 							placeholder="Enter message"
@@ -67,7 +69,7 @@ const Chat = () => {
 								onClick={(e) => {
 									e.preventDefault();
 									handleSubmit();
-									//inputRef.current?.focus();
+									inputRef.current?.focus();
 								}}
 							>
 								Chat
