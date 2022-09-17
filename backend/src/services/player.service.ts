@@ -2,7 +2,6 @@ import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { IServerSocket } from "@types";
 import { err, ok, Result } from "neverthrow";
-import generateNickname from "utils/nicknameGenerator";
 
 // Map of socketIDs to Players
 const players = new Map<string, Player>();
@@ -19,7 +18,7 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
-		nickname: generateNickname(),
+		nickname: null,
 		room: null,
 		isReady: false,
 	};

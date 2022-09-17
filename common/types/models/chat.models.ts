@@ -1,6 +1,5 @@
 import { PlayerClientData } from "./player.model";
 
-export interface ChatMessage {
-    text: string;
-    player: PlayerClientData
-}
+export type ChatMessage =
+	| { text: string; isSystemMessage: true }
+	| { text: string; isSystemMessage: false; player: PlayerClientData };

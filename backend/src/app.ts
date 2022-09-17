@@ -64,7 +64,7 @@ const socketIO = new Server<
 >(httpServer, serverSettings);
 
 socketIO.on("connection", async (socket) => {
-	// LoggerService.log("Connected", `"Socket connected - ${socket.id}"`);
+	// TODO: Logging 
 	createAndAddPlayer(socket).match(
 		(player) => {
 			registerRoomEvents(player, socket);

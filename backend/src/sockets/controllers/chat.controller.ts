@@ -15,6 +15,7 @@ function handleChatMessage(
 			type: "MESSAGE",
 			message: {
                 text: message,
+                isSystemMessage: false,
                 player: transformPlayerClientData(player)
             },
 		});

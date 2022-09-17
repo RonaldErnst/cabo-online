@@ -6,7 +6,7 @@ const RoomList: FC = () => {
 	const rooms = useRooms();
 
 	return (
-		<div className="flex flex-col mt-4 mr-4 text-center text-lg">
+		<div className="flex flex-col m-4 text-center text-lg">
 			{rooms.length === 0 ? (
 				<div>No available rooms</div>
 			) : (

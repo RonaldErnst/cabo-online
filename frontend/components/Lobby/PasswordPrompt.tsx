@@ -76,7 +76,6 @@ const PasswordPrompt: FC<Props> = ({ roomId }) => {
 								type="submit"
 								onClick={(e) => {
 									e.preventDefault();
-									setFieldValue("shouldCreateRoom", true);
 									handleSubmit();
 									inputRef.current?.focus();
 								}}

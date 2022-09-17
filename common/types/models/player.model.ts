@@ -15,7 +15,7 @@ export interface Player {
     SocketData
   >;
   playerId: string;
-  nickname: string;
+  nickname: string | null;
   room: Room | null;
   isReady: boolean;
 }

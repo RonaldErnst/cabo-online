@@ -32,7 +32,13 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	const errorListener = useCallback((err: IError) => {
-        // TODO: display errors in chat?
+        // TODO: display error as system message in chat
+        if(err.type === "PlayerNotInRoomError") {
+            setMessages((prevMessages) => {
+                return [...prevMessages, {text: err.message, isSystemMessage: true}];
+            });
+        }
+
         console.log(err);
     }, []);
 
