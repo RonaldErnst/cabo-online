@@ -1,4 +1,5 @@
 import { RoomClientData } from "@common/types/models/room.model";
+import { RoomServerClientEvent } from "@common/types/sockets";
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
 import { useSocket } from "./SocketContext";
 
@@ -17,29 +18,44 @@ export const RoomsProvider: FC<PropsWithChildren<{initialRooms: RoomClientData[]
     const socket = useSocket();
     const [rooms, setRooms] = useState<RoomClientData[]>(initialRooms);
 
-    const createRoomListener = useCallback((room: RoomClientData) => {
-        setRooms((prevRooms) => {
-            return [...prevRooms, room];
-        });
-    }, []);
-
-    const deleteRoomListener = useCallback((roomId: string) => {
-        setRooms((prevRooms) => {
-            return prevRooms.filter((r) => {
-                return r.roomId != roomId;
-            });
-        });
+    const roomListener = useCallback((roomEvent: RoomServerClientEvent) => {
+        switch(roomEvent.type) {
+            case "CREATE_ROOM":
+                setRooms((prevRooms) => {
+                    return [...prevRooms, roomEvent.room];
+                });
+                break;
+            case "CHANGE_ROOM":
+                setRooms((prevRooms) => {
+                    const updRooms = [...prevRooms];
+                    updRooms.map(r => {
+                        if(r.roomId === roomEvent.room.roomId)
+                            return roomEvent.room;
+                        else return r;
+                    })
+                    return updRooms;
+                });
+                break;
+            case "DELETE_ROOM":
+                setRooms((prevRooms) => {
+                    return [...prevRooms.filter(r => r.roomId != roomEvent.roomId)];
+                });
+                break;
+            case "JOIN_ROOM":
+                roomEvent.
+                break;
+            case "LEAVE_ROOM":
+                break;
+        }
     }, []);
 
     useEffect(() => {
-      socket.on("CREATE_ROOM", createRoomListener);
-      socket.on("DELETE_ROOM", deleteRoomListener);
+      socket.on("ROOM", roomListener);
     
       return () => {
-        socket.off("CREATE_ROOM", createRoomListener);
-        socket.off("DELETE_ROOM", deleteRoomListener);
+        socket.off("ROOM", roomListener);
       }
-    }, [socket, createRoomListener, deleteRoomListener])
+    }, [socket, roomListener])
     
 
 	return (

@@ -1,27 +1,39 @@
 import { IError } from "../errors";
-import { Player } from "../models/player.model";
-import { RoomClientData } from "../models/room.model";
+import { ChatClientServerEvent } from "./chat.clientserver";
+import { ChatServerClientEvent } from "./chat.serverclient";
+import { GameClientServerEvent } from "./game.clientserver";
+import { GameServerClientEvent } from "./game.serverclient";
+import { PlayerClientServerEvent } from "./player.clientserver";
+import { PlayerServerClientEvent } from "./player.serverclient";
+import { RoomClientServerEvent } from "./room.clientserver";
+import { RoomServerClientEvent } from "./room.serverclient";
 
 export interface ClientServerEvents {
-	CREATE_ROOM: (roomId: string) => void;
-	JOIN_ROOM: (roomId: string, password: string | null) => void;
-    LEAVE_ROOM: () => void;
-	PLAYER: () => void; // TODO for changin nickname and other stuff
-	CHAT: (message: string) => void;
-	GAME: (data: any) => void;
+	ROOM: (roomEvent: RoomClientServerEvent) => void;
+	PLAYER: (playerEvent: PlayerClientServerEvent) => void;
+	CHAT: (chatEvent: ChatClientServerEvent) => void;
+	GAME: (gameEvent: GameClientServerEvent) => void;
 }
 
 export interface ServerClientEvents {
-	CREATE_ROOM: (room: RoomClientData) => void;
-    DELETE_ROOM: (roomId: string) => void;
-	JOIN_ROOM: (playerId: string) => void;
-    LEAVE_ROOM: (playerId: string) => void;
-	CHAT: (message: string, playerId: string) => void;
-	GAME: (data: any) => void;
+	ROOM: (roomEvent: RoomServerClientEvent) => void;
+	PLAYER: (playerEvent: PlayerServerClientEvent) => void;
+	CHAT: (chatEvent: ChatServerClientEvent) => void;
+	GAME: (gameEvent: GameServerClientEvent) => void;
 	ERROR: (err: IError) => void;
 	DISCONNECT: () => void;
 }
 
-export interface ServerServerEvents {}
+export interface ServerServerEvents {};
+export interface SocketData {};
 
-export interface SocketData extends Player {}
+export {
+	ChatClientServerEvent,
+	ChatServerClientEvent,
+	GameServerClientEvent,
+	GameClientServerEvent,
+	PlayerClientServerEvent,
+	PlayerServerClientEvent,
+	RoomClientServerEvent,
+	RoomServerClientEvent,
+};

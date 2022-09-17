@@ -19,3 +19,10 @@ export interface Player {
   room: Room | null;
   isReady: boolean;
 }
+
+
+export interface PlayerClientData {
+    playerId: string;
+    nickname: string;
+    isReady: boolean;
+}
