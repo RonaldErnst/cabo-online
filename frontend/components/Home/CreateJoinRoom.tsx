@@ -1,5 +1,5 @@
 import { IError } from "@common/types/errors";
-import { RoomClientData } from "@common/types/models/room.model";
+import { CreateRoomEvent, RoomServerClientEvent } from "@common/types/sockets/room";
 import { useSocket } from "@contexts/SocketContext";
 import axios from "axios";
 import { Field, Form, Formik, FormikHelpers } from "formik";
@@ -49,21 +49,24 @@ const CreateJoinRoom = () => {
 			inputRef.current?.focus();
 		};
 
-		const createRoomListener = (room: RoomClientData) => {
+		const createRoomListener = (roomEvent: RoomServerClientEvent) => {
 			removeListeners();
 
+            if(roomEvent.type !== "CREATE_ROOM")
+                return; // TODO: error handling necessary?
+
 			// Room got created, join room
-			router.push(`/room/${room.roomId}`);
+			router.push(`/room/${roomEvent.room.roomId}`);
 		};
 
 		const removeListeners = () => {
 			socket.off("ERROR", errorListener);
-			socket.off("CREATE_ROOM", createRoomListener);
+			socket.off("ROOM", createRoomListener);
 		};
 
 		socket.once("ERROR", errorListener);
-		socket.once("CREATE_ROOM", createRoomListener);
-		socket.emit("CREATE_ROOM", roomId);
+		socket.once("ROOM", createRoomListener);
+		socket.emit("ROOM", { type: "CREATE_ROOM", roomId });
 	};
 
 	const handleJoinRoom = async (

@@ -1,4 +1,4 @@
-import { PlayerClientData } from "../models/player.model";
+import { PlayerClientData } from "../../models/player.model";
 
 interface PlayerChangeEvent {
 	type: "CHANGE_PLAYER";

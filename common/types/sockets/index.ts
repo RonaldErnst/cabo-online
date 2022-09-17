@@ -1,12 +1,12 @@
 import { IError } from "../errors";
-import { ChatClientServerEvent } from "./chat.clientserver";
-import { ChatServerClientEvent } from "./chat.serverclient";
-import { GameClientServerEvent } from "./game.clientserver";
-import { GameServerClientEvent } from "./game.serverclient";
-import { PlayerClientServerEvent } from "./player.clientserver";
-import { PlayerServerClientEvent } from "./player.serverclient";
-import { RoomClientServerEvent } from "./room.clientserver";
-import { RoomServerClientEvent } from "./room.serverclient";
+import { ChatClientServerEvent, ChatServerClientEvent } from "./chat";
+import { GameClientServerEvent, GameServerClientEvent } from "./game";
+import { PlayerClientServerEvent, PlayerServerClientEvent } from "./player";
+import { RoomClientServerEvent, RoomServerClientEvent } from "./room";
+
+export interface IEventType {
+    type: string;
+}
 
 export interface ClientServerEvents {
 	ROOM: (roomEvent: RoomClientServerEvent) => void;

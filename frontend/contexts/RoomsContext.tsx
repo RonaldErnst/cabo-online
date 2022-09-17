@@ -28,7 +28,9 @@ export const RoomsProvider: FC<
 	const socket = useSocket();
 	const [rooms, setRooms] = useState<RoomClientData[]>(initialRooms);
 
-	const roomListener = useCallback((roomEvent: RoomServerClientEvent) => {
+	const roomEventListener = useCallback((roomEvent: RoomServerClientEvent) => {
+        console.log("Received room event");
+
 		switch (roomEvent.type) {
 			case "CREATE_ROOM": // A room got created, add to room list
 				console.log(`Room ${roomEvent.room.roomId} got created`);
@@ -93,12 +95,14 @@ export const RoomsProvider: FC<
 	}, []);
 
 	useEffect(() => {
-		socket.on("ROOM", roomListener);
+        console.log("Setting up room event listener");
+		socket.on("ROOM", roomEventListener);
 
 		return () => {
-			socket.off("ROOM", roomListener);
+            console.log("Tearing down room event listener");
+			socket.off("ROOM", roomEventListener);
 		};
-	}, [socket, roomListener]);
+	}, [socket, roomEventListener]);
 
 	return (
 		<RoomsContext.Provider value={rooms}>{children}</RoomsContext.Provider>
