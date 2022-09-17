@@ -112,7 +112,7 @@ function joinRoom(
 	return ok(room);
 }
 
-function leaveRoom(player: Player): Result<Room, IError> {
+function leaveRoom(player: Player): Result<string, IError> {
 	const room = player.room;
 
 	if (room === null)
@@ -128,7 +128,7 @@ function leaveRoom(player: Player): Result<Room, IError> {
 	if (settings.removeEmptyRoom && room.players.length === 0)
 		rooms.delete(room.roomId);
 
-	return ok(room);
+	return ok(room.roomId);
 }
 
 function checkPassword(

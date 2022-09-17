@@ -3,6 +3,7 @@ import { RoomClientServerEvent } from "@common/types/sockets/";
 import { createAndAddRoom, joinRoom, leaveRoom } from "@services/rooms.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
+import transformPlayerClientData from "utils/transformPlayerClientData";
 import transformRoomClientData from "utils/transformRoomClientData";
 
 function handleCreateRoom(
@@ -43,7 +44,7 @@ function handleJoinRoom(
 
 			socketIO.in(roomId).emit("ROOM", {
 				type: "JOIN_ROOM",
-				playerId: player.playerId,
+				player: transformPlayerClientData(player),
 				roomId,
 			});
 		},
@@ -56,13 +57,13 @@ function handleJoinRoom(
 
 function handleLeaveRoom(player: Player, socket: IServerSocket) {
 	leaveRoom(player).match(
-		(room) => {
-			console.log(`Player ${player.playerId} left room ${room.roomId}`);
+		(roomId) => {
+			console.log(`Player ${player.playerId} left room ${roomId}`);
 
-			socketIO.in(room.roomId).emit("ROOM", {
+			socketIO.in(roomId).emit("ROOM", {
 				type: "LEAVE_ROOM",
 				playerId: player.playerId,
-				roomId: room.roomId,
+                roomId: roomId
 			});
 		},
 		(err) => {
@@ -72,7 +73,7 @@ function handleLeaveRoom(player: Player, socket: IServerSocket) {
 	);
 }
 
-function handleRoomEvents(player: Player, socket: IServerSocket) {
+export default function handleRoomEvents(player: Player, socket: IServerSocket) {
 	return (roomEvent: RoomClientServerEvent) => {
 		switch (roomEvent.type) {
 			case "CREATE_ROOM":
@@ -97,5 +98,3 @@ function handleRoomEvents(player: Player, socket: IServerSocket) {
 		}
 	};
 }
-
-export { handleRoomEvents };

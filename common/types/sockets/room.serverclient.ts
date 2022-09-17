@@ -1,3 +1,4 @@
+import { PlayerClientData } from "../models/player.model";
 import { RoomClientData } from "../models/room.model";
 
 interface CreateRoomEvent {
@@ -12,7 +13,7 @@ interface DeleteRoomEvent {
 
 interface JoinRoomEvent {
 	type: "JOIN_ROOM";
-	playerId: string;
+	player: PlayerClientData;
 	roomId: string;
 }
 
@@ -23,8 +24,8 @@ interface LeaveRoomEvent {
 }
 
 interface ChangeRoomEvent {
-    type: "CHANGE_ROOM",
-    room: RoomClientData
+    type: "CHANGE_ROOM";
+    room: RoomClientData;
 }
 
 export type RoomServerClientEvent =

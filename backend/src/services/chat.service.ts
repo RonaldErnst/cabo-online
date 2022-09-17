@@ -9,9 +9,7 @@ function sendMessage(player: Player, message: string): Result<string, IError> {
 			message: `Player has not joined a room yet. Cannot send message`,
 		});
 
-	const room = player.room;
-	const roomId = room.roomId;
-
+	const roomId = player.room.roomId;
 	return ok(roomId);
 }
 

@@ -21,7 +21,6 @@ export interface ServerClientEvents {
 	CHAT: (chatEvent: ChatServerClientEvent) => void;
 	GAME: (gameEvent: GameServerClientEvent) => void;
 	ERROR: (err: IError) => void;
-	DISCONNECT: () => void;
 }
 
 export interface ServerServerEvents {};
