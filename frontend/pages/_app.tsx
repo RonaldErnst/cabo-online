@@ -1,13 +1,31 @@
-import "../styles/globals.css";
-import type { AppProps } from "next/app";
+import { RoomClientData } from "@common/types/models/room.model";
+import { RoomsProvider } from "@contexts/RoomsContext";
 import { SocketProvider } from "@contexts/SocketContext";
+import type { AppContext, AppInitialProps, AppProps } from "next/app";
+import App from "next/app";
+import getAllRooms from "utils/getAllRoms";
+import "../styles/globals.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <SocketProvider>
-      <Component {...pageProps} />
-    </SocketProvider>
-  );
+type Props = { initialRooms: RoomClientData[] };
+
+function MyApp({ Component, pageProps, initialRooms }: AppProps & Props) {
+	return (
+		<SocketProvider>
+			<RoomsProvider initialRooms={initialRooms}>
+				<Component {...pageProps} />
+			</RoomsProvider>
+		</SocketProvider>
+	);
 }
+
+MyApp.getInitialProps = async (
+	context: AppContext
+): Promise<Props & AppInitialProps> => {
+	const ctx = await App.getInitialProps(context);
+
+	const initialRooms = await getAllRooms();
+
+	return { ...ctx, initialRooms };
+};
 
 export default MyApp;

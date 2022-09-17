@@ -5,35 +5,6 @@ import { FC } from "react";
 import { LockFill, Unlock } from "react-bootstrap-icons";
 import existsRoom from "utils/existsRoom";
 
-interface Props {
-	rooms: RoomClientData[];
-}
-
-const RoomList: FC<Props> = ({ rooms }) => {
-	return (
-		<div className="flex flex-col mt-4 mr-4 text-center text-lg">
-			{rooms.length === 0 ? (
-				<div>No available rooms</div>
-			) : (
-				<table>
-					<thead>
-						<tr>
-							<th className="w-40">Room</th>
-							<th className="w-24">Players</th>
-							<th className="w-16">Public</th>
-							<th className="w-24"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{rooms.map((room) => {
-							return <Room key={room.roomId} room={room} />;
-						})}
-					</tbody>
-				</table>
-			)}
-		</div>
-	);
-};
 
 const Room: FC<{ room: RoomClientData }> = ({ room }) => {
     const router = useRouter();
@@ -91,4 +62,4 @@ const Room: FC<{ room: RoomClientData }> = ({ room }) => {
 	);
 };
 
-export default RoomList;
+export default Room;

@@ -13,6 +13,7 @@ export interface ClientServerEvents {
 
 export interface ServerClientEvents {
 	CREATE_ROOM: (room: RoomClientData) => void;
+    DELETE_ROOM: (roomId: string) => void;
 	JOIN_ROOM: (playerId: string) => void;
     LEAVE_ROOM: (playerId: string) => void;
 	CHAT: (message: string, playerId: string) => void;
