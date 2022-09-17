@@ -69,6 +69,7 @@ export const RoomsProvider: FC<
 				break;
 
 			case "LEAVE_ROOM": // A player left a room, update room
+                console.log(`A player left room ${roomEvent.roomId}`); 
 				setRooms((prevRooms) => {
 					const updRooms = [...prevRooms];
 					updRooms.map((r) => {
@@ -82,7 +83,8 @@ export const RoomsProvider: FC<
 				break;
 
 			default:
-			// TODO: handle Error?
+				// TODO: handle Error?
+				console.log(`Unknown Room Event`);
 		}
 	}, []);
 

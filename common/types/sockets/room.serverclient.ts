@@ -13,13 +13,11 @@ interface DeleteRoomEvent {
 
 interface JoinRoomEvent {
 	type: "JOIN_ROOM";
-	player: PlayerClientData;
 	roomId: string;
 }
 
 interface LeaveRoomEvent {
 	type: "LEAVE_ROOM";
-	playerId: string;
 	roomId: string;
 }
 

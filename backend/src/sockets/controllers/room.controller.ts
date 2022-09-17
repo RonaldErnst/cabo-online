@@ -44,7 +44,6 @@ function handleJoinRoom(
 
 			socketIO.in(roomId).emit("ROOM", {
 				type: "JOIN_ROOM",
-				player: transformPlayerClientData(player),
 				roomId,
 			});
 		},
@@ -62,7 +61,6 @@ function handleLeaveRoom(player: Player, socket: IServerSocket) {
 
 			socketIO.in(roomId).emit("ROOM", {
 				type: "LEAVE_ROOM",
-				playerId: player.playerId,
                 roomId: roomId
 			});
 		},
