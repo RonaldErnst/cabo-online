@@ -1,4 +1,5 @@
 import { IError } from "@common/types/errors";
+import { ChatProvider } from "@contexts/ChatContext";
 import { useSocket } from "@contexts/SocketContext";
 import { FC, useEffect } from "react";
 import PasswordPrompt from "./PasswordPrompt";
@@ -45,7 +46,13 @@ const Lobby: FC<Props> = ({ roomId, requiresPassword, password }) => {
 	if (requiresPassword && password === null)
 		return <PasswordPrompt roomId={roomId} />;
 
-	return <div>{roomId}</div>;
+	return (
+		<ChatProvider>
+			<div className="bg-slate-700 w-full h-full flex flex-col">
+				{roomId}
+			</div>
+		</ChatProvider>
+	);
 };
 
 export default Lobby;

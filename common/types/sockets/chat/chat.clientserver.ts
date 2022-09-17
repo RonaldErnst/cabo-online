@@ -1,8 +1,8 @@
+import { ChatMessage } from "types/models/chat.models";
+
 interface MessageChatEvent {
 	type: "MESSAGE";
 	message: string;
-	playerId: string;
 }
-
 
 export type ChatClientServerEvent = MessageChatEvent;

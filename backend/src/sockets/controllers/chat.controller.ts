@@ -1,30 +1,40 @@
+import { ChatMessage } from "@common/types/models/chat.models";
 import { Player } from "@common/types/models/player.model";
 import { ChatClientServerEvent } from "@common/types/sockets";
-import { sendMessage } from "@services/chat.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
+import transformPlayerClientData from "utils/transformPlayerClientData";
 
-function handleChatMessage(player: Player, socket: IServerSocket, message: string) {
-    sendMessage(player, message).match(
-        (roomId) => {
-            socketIO
-                .in(roomId)
-                .emit("CHAT", {
-                    type: "MESSAGE",
-                    message,
-                    playerId: player.playerId,
-                });
-        },
-        (err) => socket.emit("ERROR", err)
-    );
+function handleChatMessage(
+	player: Player,
+	socket: IServerSocket,
+	message: string
+) {
+	if (player.room !== null) {
+		socketIO.in(player.room.roomId).emit("CHAT", {
+			type: "MESSAGE",
+			message: {
+                text: message,
+                player: transformPlayerClientData(player)
+            },
+		});
+	} else {
+		socket.emit("ERROR", {
+			type: "PlayerNotInRoomError",
+			message: "Player is not in any room. Cannot send message",
+		});
+	}
 }
 
-export default function handleChatEvents(player: Player, socket: IServerSocket) {
-    return (chatEvent: ChatClientServerEvent) => {
+export default function handleChatEvents(
+	player: Player,
+	socket: IServerSocket
+) {
+	return (chatEvent: ChatClientServerEvent) => {
 		switch (chatEvent.type) {
-            case "MESSAGE":
-                handleChatMessage(player, socket, chatEvent.message);
-                break;
+			case "MESSAGE":
+				handleChatMessage(player, socket, chatEvent.message);
+				break;
 			default:
 				socket.emit("ERROR", {
 					type: "UnknownError",
