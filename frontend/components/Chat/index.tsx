@@ -1,5 +1,6 @@
 import { useChat } from "@contexts/ChatContext";
 import { Field, Form, Formik, FormikHelpers } from "formik";
+import validateChatMessage from "utils/validateChatMessage";
 import ChatMessage from "./ChatMessage";
 
 interface FormValues {
@@ -17,18 +18,26 @@ const Chat = () => {
 		{ setSubmitting, setFieldValue }: FormikHelpers<FormValues>
 	) => {
 		setSubmitting(true);
-
-		sendMessage(message);
-        setFieldValue("message", "");
-
+		validateChatMessage(message).match(
+			(msg) => {
+				sendMessage(msg);
+				setFieldValue("message", "");
+			},
+			(err) => {
+                // TODO: show error?
+                console.log(err);
+            }
+		);
 		setSubmitting(false);
 	};
 
 	return (
 		<div className="w-96 flex flex-col gap-4 p-4 bg-slate-600">
-			<div className="grow flex flex-col">{
-                messages.map((m,i) => <ChatMessage key={i} message={m}/>)
-            }</div>
+			<div className="grow flex flex-col">
+				{messages.map((m, i) => (
+					<ChatMessage key={i} message={m} />
+				))}
+			</div>
 			<Formik<FormValues>
 				initialValues={initialValues}
 				onSubmit={handleSubmit}
@@ -45,7 +54,7 @@ const Chat = () => {
 					<Form className="flex flex-row justify-center items-center gap-4">
 						<Field // TODO: display error with red highlight and icon with hover
 							//innerRef={inputRef}
-                            // TODO: validate message, trim, remove linebreaks, etc
+							// TODO: validate message, trim, remove linebreaks, etc
 							name="message"
 							placeholder="Enter message"
 							className="w-full h-10 p-2 rounded-md"

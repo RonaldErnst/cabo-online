@@ -26,7 +26,7 @@ const serverSettings: Partial<ServerOptions> = {
 	pingInterval: PING_INTERVAL,
 	pingTimeout: PING_TIMEOUT,
 	cors: {
-		origin: ["http://localhost:3000", "http://yourapp.com"], // TODO
+		origin: ["http://localhost:3000", "http://192.168.178.37:3000", "http://yourapp.com"], // TODO
 		credentials: true,
 	},
 	transports: ["websocket"],
@@ -37,6 +37,7 @@ const httpServer = createServer(app);
 
 var allowedOrigins = [
 	"http://localhost:3000", // TODO
+    "http://192.168.178.37:3000",
 	"http://yourapp.com",
 ];
 app.use(

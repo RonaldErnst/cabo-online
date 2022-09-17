@@ -18,7 +18,7 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
-		nickname: null,
+		nickname: "",
 		room: null,
 		isReady: false,
 	};
