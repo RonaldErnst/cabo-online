@@ -3,7 +3,7 @@ interface CreateRoomEvent {
 	roomId: string;
 }
 
-export type RoomSettingType =
+export type ChangeRoomSetting =
 	| {
 			setting: "isPrivate";
 			value:
@@ -17,11 +17,15 @@ export type RoomSettingType =
 	| {
 			setting: "currPlayerCount";
 			value: number;
+	  }
+	| {
+			setting: "host";
+			value: string;
 	  };
 
 type ChangeRoomSettingEvent = {
 	type: "CHANGE_ROOM_SETTING";
-	setting: RoomSettingType;
+	setting: ChangeRoomSetting;
 };
 
 interface JoinRoomEvent {

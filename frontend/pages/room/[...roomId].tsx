@@ -49,9 +49,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 		const room = await existsRoom(
 			Array.isArray(roomId) ? roomId[0] : roomId
 		);
+		console.log(room);
 
 		// Room doesn't exist, redirect to home page
-		if (room === null)
+		if (room === null) {
 			return {
 				redirect: {
 					permanent: false,
@@ -61,9 +62,10 @@ export const getServerSideProps: GetServerSideProps = async ({
 					error: "Room does not exist",
 				},
 			};
+		}
 
 		// Room exists, get default room settings
-        const defaultSettings = await getDefaultRoomSettings();
+		const defaultSettings = await getDefaultRoomSettings();
 
 		// If room is public, let player join
 		if (!room.isPrivate)
@@ -72,7 +74,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: false,
 					password: null,
-                    defaultSettings
+					defaultSettings,
 				},
 			};
 
@@ -86,7 +88,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: true,
 					password: null,
-                    defaultSettings
+					defaultSettings,
 				},
 			};
 
@@ -95,7 +97,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 				roomId: room.roomId,
 				requiresPassword: true,
 				password: Array.isArray(pw) ? pw[0] : pw,
-                defaultSettings
+				defaultSettings,
 			},
 		};
 	} catch (err) {

@@ -1,11 +1,12 @@
 import { IError } from "@common/types/errors";
-import { CreateRoomEvent, RoomServerClientEvent } from "@common/types/sockets/room";
+import { RoomServerClientEvent } from "@common/types/sockets/room";
 import { useSocket } from "@contexts/SocketContext";
 import axios from "axios";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import existsRoom from "utils/existsRoom";
+import generateRoomId from "utils/generateRoomId";
 import * as Yup from "yup";
 import ErrorAlert from "../ErrorAlert";
 
@@ -25,15 +26,17 @@ const CreateJoinRoom = () => {
 	};
 
 	const validationSchema = Yup.object({
-		roomId: Yup.string()
-			.trim()
-			.required("Cannot be empty")
-			.min(5, "Must be at least 5 characters long")
-			.max(20, "Must be at most 20 characters long")
-			.matches(
-				/^[\w\s-]*$/,
-				"Only allowed characters: letters, numbers, whitespace, - and _"
-			),
+		roomId: Yup.string().when("shouldCreateRoom", {
+			is: false,
+			then: Yup.string().required("Cannot be empty"),
+		})
+        .trim()
+        .min(5, "Must be at least 5 characters long")
+        .max(20, "Must be at most 20 characters long")
+        .matches(
+            /^[\w\s-]*$/,
+            "Only allowed characters: letters, numbers, whitespace, - and _"
+        ),
 	});
 
 	// Create listeners for one time responses
@@ -41,22 +44,24 @@ const CreateJoinRoom = () => {
 		roomId: string,
 		{ setFieldError }: FormikHelpers<FormValues>
 	) => {
-		const errorListener = (err: IError) => {
-			removeListeners();
+        if(roomId.length === 0)
+            roomId = generateRoomId();
 
+		const errorListener = (err: IError) => {
 			console.log(err); // TODO handle Error
 			setFieldError("roomId", err.message);
 			inputRef.current?.focus();
+			removeListeners();
 		};
 
 		const createRoomListener = (roomEvent: RoomServerClientEvent) => {
-			removeListeners();
-
-            if(roomEvent.type !== "CREATE_ROOM")
-                return; // TODO: error handling necessary?
+			if (roomEvent.type !== "CREATE_ROOM") return; // TODO: error handling necessary?
 
 			// Room got created, join room
-			router.push(`/room/${roomEvent.room.roomId}`);
+            console.log(`Joining room ${roomEvent.room.roomId}`);
+			removeListeners();
+            
+            router.push(`/room/${roomEvent.room.roomId}`);
 		};
 
 		const removeListeners = () => {
@@ -114,6 +119,7 @@ const CreateJoinRoom = () => {
 		}
 
 		actions.setSubmitting(false);
+        inputRef.current?.focus();
 	}
 
 	return (
@@ -127,10 +133,8 @@ const CreateJoinRoom = () => {
 			>
 				{({
 					setFieldValue,
-					handleSubmit,
 					isSubmitting,
 					errors,
-                    values: { roomId },
 					setFieldError,
 				}) => (
 					<Form className="flex flex-col justify-center items-center gap-4 bg-slate-600 p-16 rounded-xl drop-shadow-lg">
@@ -154,10 +158,7 @@ const CreateJoinRoom = () => {
 								disabled={isSubmitting}
 								type="submit"
 								onClick={(e) => {
-									e.preventDefault();
 									setFieldValue("shouldCreateRoom", true);
-									handleSubmit();
-									inputRef.current?.focus();
 								}}
 							>
 								Create Room
@@ -167,10 +168,7 @@ const CreateJoinRoom = () => {
 								disabled={isSubmitting}
 								type="submit"
 								onClick={(e) => {
-									e.preventDefault();
 									setFieldValue("shouldCreateRoom", false);
-									handleSubmit();
-									inputRef.current?.focus();
 								}}
 							>
 								Join Room

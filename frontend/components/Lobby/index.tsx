@@ -53,7 +53,7 @@ const Lobby: FC<{ data: Props }> = ({
 		return <PasswordPrompt roomId={roomId} />;
 
 	return (
-		<LobbyProvider defaultSettings={defaultSettings}>
+		<LobbyProvider defaultSettings={defaultSettings} roomId={roomId}>
 			<ChatProvider>
 				<div className="bg-slate-700 w-full h-full flex flex-row">
 					<div className="grow">{roomId}</div>

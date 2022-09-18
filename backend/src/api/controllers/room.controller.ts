@@ -1,6 +1,6 @@
 import { IError } from "@common/types/errors";
 import { RoomClientData } from "@common/types/models/room.model";
-import { checkPassword, getAllRooms, getRoom } from "@services/rooms.service";
+import { checkPassword, getAllRooms, getDefaultRoomSettings, getRoom } from "@services/rooms.service";
 import { RequestHandler } from "express";
 import transformRoomClientData from "utils/transformRoomClientData";
 
@@ -38,4 +38,9 @@ const handleCheckPassword: RequestHandler<
 	);
 };
 
-export { handleGetAllRooms, handleGetSingleRoom, handleCheckPassword };
+const handleGetDefaultSettings: RequestHandler = async (req, res, next) => {
+	const settings = getDefaultRoomSettings();
+    res.status(200).json(settings);
+};
+
+export { handleGetAllRooms, handleGetSingleRoom, handleCheckPassword, handleGetDefaultSettings };

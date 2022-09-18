@@ -6,15 +6,15 @@ export interface RoomSettings {
 	maxPlayerCount: number;
 }
 
-export interface Room {
+export type Room = {
 	roomId: string;
 	players: Array<Player>;
 	host: Player | null;
-	options: RoomSettings;
-}
+} & RoomSettings;
 
 export interface RoomClientData {
 	roomId: string;
+    host: string | null;
 	isPrivate: boolean;
 	maxPlayerCount: number;
 	currPlayerCount: number;

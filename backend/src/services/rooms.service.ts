@@ -15,28 +15,24 @@ const rooms = new Map<string, Room>();
 /**
  * Create Interval for periodic room cleanup
  */
-//const cleanRoomsInterval = setInterval(cleanRooms, settings.cleanRoomsInterval);
+const cleanRoomsInterval = setInterval(cleanRooms, settings.cleanRoomsInterval);
 
 // Mock data
 rooms.set("test123", {
 	host: null,
 	players: [],
 	roomId: "test123",
-	options: {
-		isPrivate: false,
-		maxPlayerCount: 4,
-		password: null,
-	},
+	isPrivate: false,
+	maxPlayerCount: 4,
+	password: null,
 });
 rooms.set("anotherRoom", {
 	host: null,
 	players: [],
 	roomId: "anotherRoom",
-	options: {
-		isPrivate: true,
-		maxPlayerCount: 5,
-		password: "password",
-	},
+	isPrivate: true,
+	maxPlayerCount: 5,
+	password: "password",
 });
 
 /**
@@ -47,6 +43,9 @@ rooms.set("anotherRoom", {
  * but has no connected players
  */
 function cleanRooms() {
+	// Clean rooms if settings allows it
+	if (!settings.removeEmptyRoom) return;
+
 	const idsForDeletion: string[] = [];
 	rooms.forEach((room, roomId) => {
 		if (room.players.length === 0) idsForDeletion.push(roomId);
@@ -59,6 +58,14 @@ function cleanRooms() {
 			roomId: id,
 		});
 	});
+}
+
+function getDefaultRoomSettings(): RoomSettings {
+	return {
+		isPrivate: false,
+		maxPlayerCount: 10,
+		password: null,
+	};
 }
 
 /**
@@ -101,11 +108,7 @@ function getAllRooms() {
  */
 function createAndAddRoom(
 	roomId: string,
-	options: RoomSettings = {
-		isPrivate: false,
-		maxPlayerCount: 10,
-		password: null,
-	}
+	options: RoomSettings = getDefaultRoomSettings()
 ): Result<Room, IError> {
 	if (existsRoom(roomId))
 		return err({
@@ -117,7 +120,7 @@ function createAndAddRoom(
 		roomId,
 		host: null,
 		players: new Array(),
-		options,
+		...options,
 	};
 
 	addRoom(room);
@@ -149,7 +152,7 @@ function joinRoom(
 			message: `Player is already in a room`,
 		});
 
-	if (room.options.isPrivate && password != room.options.password)
+	if (room.isPrivate && password !== room.password)
 		return err({
 			type: "WrongPasswordRoomError",
 			message: `Password does not match`,
@@ -186,6 +189,13 @@ function leaveRoom(player: Player): Result<Room, IError> {
 		socketIO.emit("ROOM", { type: "DELETE_ROOM", roomId: room.roomId });
 	}
 
+	// Room is not empty
+	// If host left the lobby, assign new host
+	if (room.host === player) {
+		// Assign new host
+		room.host = null;
+	}
+
 	return ok(room);
 }
 
@@ -204,13 +214,13 @@ function checkPassword(
 	if (room === undefined)
 		return err({ type: "UnknownRoomError", message: "Room not found" });
 
-	if (!room.options.isPrivate)
+	if (!room.isPrivate)
 		return err({
 			type: "NotPrivateRoomError",
 			message: "Room is not private",
 		});
 
-	if (room.options.password != password)
+	if (room.password !== password)
 		return err({
 			type: "WrongPasswordRoomError",
 			message: "Wrong password",
@@ -226,4 +236,5 @@ export {
 	getAllRooms,
 	leaveRoom,
 	checkPassword,
+	getDefaultRoomSettings,
 };

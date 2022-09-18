@@ -1,8 +1,8 @@
 import { IError } from "@common/types/errors";
 import { RoomSettings } from "@common/types/models/room.model";
 import {
+	ChangeRoomSetting,
 	RoomServerClientEvent,
-	RoomSettingType,
 } from "@common/types/sockets/room";
 import {
 	createContext,
@@ -15,16 +15,16 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import generateNickname from "utils/nicknameGenerator";
+import generateNickname from "utils/generateNickname";
 import { useSocket } from "./SocketContext";
 
 interface ILobbyContext {
 	nickname: string;
 	isReady: boolean;
-	settings: undefined;
+	settings: RoomSettings;
 	setNickname: Dispatch<SetStateAction<string>>;
 	setIsReady: Dispatch<SetStateAction<boolean>>;
-	changeSetting: (roomSetting: RoomSettingType) => void;
+	changeSetting: (roomSetting: ChangeRoomSetting) => void;
 }
 
 const LobbyContext = createContext<ILobbyContext | null>(null);
@@ -47,14 +47,16 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	roomId,
 	defaultSettings,
 }) => {
+	console.log("Creating Lobby Provider");
 	const [nickname, setNickname] = useState(generateNickname());
 	const [isReady, setIsReady] = useState(false);
 
 	const [settings, setSettings] = useState<RoomSettings>(defaultSettings);
+	const [lobbyHost, setLobbyHost] = useState<string>();
 
 	const socket = useSocket();
 
-	const errorListener = useCallback((err: IError) => {
+	const errorEventsListener = useCallback((err: IError) => {
 		// TODO: display error as system message in Lobby
 		console.log(err);
 	}, []);
@@ -64,12 +66,10 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 			// Only Change room events matter here
 			if (roomEvent.type !== "CHANGE_ROOM") return;
 
-			// Sanity check, roomId should be the current rooms
+			// Sanity check, roomId should be the current room's id
 			if (roomEvent.room.roomId !== roomId) {
-				// Something went wrong
-				// Got Changed settings for a different room
-				// TODO: handle Error
-				console.log(`Cannot change settings from a different room`);
+				// Received CHANGE_ROOM from a different room
+				//console.log(`Cannot change settings from a different room`);
 				return;
 			}
 
@@ -88,30 +88,35 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 
 	useEffect(() => {
 		socket.on("ROOM", roomEventsListener);
-		socket.on("ERROR", errorListener);
+		socket.on("ERROR", errorEventsListener);
 
 		return () => {
 			socket.off("ROOM", roomEventsListener);
-			socket.off("ERROR", errorListener);
+			socket.off("ERROR", errorEventsListener);
 		};
-	}, [errorListener, roomEventsListener, socket]);
+	}, [errorEventsListener, roomEventsListener, socket]);
 
-	const changeSetting = (roomSetting: RoomSettingType) => {
+	const changeSetting = (roomSetting: ChangeRoomSetting) => {
 		switch (roomSetting.setting) {
 			case "isPrivate":
 				setSettings((prevSettings) => ({
 					...prevSettings,
-					password: roomSetting.value.isPrivate ? roomSetting.value.password : null,
+					password: roomSetting.value.isPrivate
+						? roomSetting.value.password
+						: null,
 				}));
-            case "maxPlayerCount": // Do nothing
-                break;
+			case "maxPlayerCount": // Do nothing
+				break;
 			case "currPlayerCount": // changing current player count does not happen here
 			default:
-                // Don't emit Change setting event
+				// Don't emit Change setting event
 				return;
 		}
 
-		socket.emit("ROOM", { type: "CHANGE_ROOM_SETTING", setting: roomSetting });
+		socket.emit("ROOM", {
+			type: "CHANGE_ROOM_SETTING",
+			setting: roomSetting,
+		});
 	};
 
 	const value = {
