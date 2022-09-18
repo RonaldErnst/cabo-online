@@ -3,6 +3,7 @@ import { ChangeRoomSetting } from "@common/types/sockets/room";
 import {
 	createAndAddPlayer,
 	getExistingPlayer,
+    removePlayer,
 } from "@services/player.service";
 import {
 	changeRoomSetting,
@@ -59,11 +60,18 @@ function handleJoinRoom(
 }
 
 function handleLeaveRoom(socket: IServerSocket) {
-	const player = getExistingPlayer(socket.id)
-		.andThen((player) => leaveRoom(player))
+	getExistingPlayer(socket.id)
+		.andThen((player) => {
+			return leaveRoom(player).map((room) => ({ room, player }));
+		})
 		.match(
-			(room) => {
-				console.log(`Player ${socket.id} left room ${room.roomId}`);
+			({ room, player }) => {
+                // Remove the player from the players map
+                removePlayer(player.playerId);
+
+				console.log(
+					`Player ${player.playerId} left room ${room.roomId}`
+				);
 
 				socketIO.emit("ROOM", {
 					type: "CHANGE_ROOM",
@@ -85,12 +93,10 @@ function handleChangeRoomSetting(
 		.andThen((player) => changeRoomSetting(player, setting))
 		.match(
 			(room) => {
-				socketIO
-					.in(room.roomId)
-					.emit("ROOM", {
-						type: "CHANGE_ROOM",
-						room: transformRoomClientData(room),
-					});
+				socketIO.in(room.roomId).emit("ROOM", {
+					type: "CHANGE_ROOM",
+					room: transformRoomClientData(room),
+				});
 			},
 			(err) => {
 				console.log(err);

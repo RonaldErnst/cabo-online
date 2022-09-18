@@ -48,7 +48,7 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 
 	addPlayer(player);
 
-	console.log("Added player ", player.playerId);
+	console.log(`Added player ${player.playerId}`);
 
 	return ok(player);
 }
@@ -80,4 +80,14 @@ function changePlayerSetting(
 	return ok(player);
 }
 
-export { createAndAddPlayer, getExistingPlayer, changePlayerSetting };
+function removePlayer(playerId: string) {
+	players.delete(playerId);
+    console.log(`Removed player ${playerId}`);
+}
+
+export {
+	createAndAddPlayer,
+	getExistingPlayer,
+	changePlayerSetting,
+	removePlayer,
+};

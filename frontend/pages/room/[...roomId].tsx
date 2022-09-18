@@ -49,7 +49,6 @@ export const getServerSideProps: GetServerSideProps = async ({
 		const room = await existsRoom(
 			Array.isArray(roomId) ? roomId[0] : roomId
 		);
-		console.log(room);
 
 		// Room doesn't exist, redirect to home page
 		if (room === null) {

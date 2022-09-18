@@ -230,41 +230,45 @@ function checkPassword(
 	return ok(true);
 }
 
-function changeRoomSetting(player: Player, {setting, value}: ChangeRoomSetting): Result<Room, IError> {
-    if(player.room === null) 
-        return err({
+function changeRoomSetting(
+	player: Player,
+	{ setting, value }: ChangeRoomSetting
+): Result<Room, IError> {
+	if (player.room === null)
+		return err({
 			type: "PlayerNotInRoomError",
 			message: `Player is not in any room`,
 		});
 
-    const room = player.room;
-    if (room.host !== player.playerId)
-        return err({
-            type: "PlayerNotHostError",
-            message: "Player is not the host of this lobby. Cannot change settings"
-        });
+	const room = player.room;
+	if (room.host !== player.playerId)
+		return err({
+			type: "PlayerNotHostError",
+			message:
+				"Player is not the host of this lobby. Cannot change settings",
+		});
 
-    switch (setting) {
-        case "host":
-            // Host got transferred
-            room.host = value;
-            break;
-        case "isPrivate":
-            room.isPrivate = value.isPrivate;
-            room.password = value.password;
-            break;
-        case "maxPlayerCount":
-            room.maxPlayerCount = value;
-            break;
-        case "currPlayerCount":
-        default:
-            return err({
-                type: "InvalidRoomSetting",
-                message: "Invalid room setting sent",
-            });
-    }
-    
-    return ok(room);
+	switch (setting) {
+		case "host":
+			// Host got transferred
+			room.host = value;
+			break;
+		case "isPrivate":
+			room.isPrivate = value.isPrivate;
+			room.password = value.password;
+			break;
+		case "maxPlayerCount":
+			room.maxPlayerCount = value;
+			break;
+		case "currPlayerCount":
+		default:
+			return err({
+				type: "InvalidRoomSetting",
+				message: "Invalid room setting sent",
+			});
+	}
+
+	return ok(room);
 }
 
 export {
@@ -275,5 +279,5 @@ export {
 	leaveRoom,
 	checkPassword,
 	getDefaultRoomSettings,
-    changeRoomSetting
+	changeRoomSetting,
 };
