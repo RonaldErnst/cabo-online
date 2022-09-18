@@ -10,7 +10,7 @@ function transformRoomClientData(
 	} else {
 		return {
 			roomId: rooms.roomId,
-			host: rooms.host?.playerId || null,
+			host: rooms.host || null,
 			isPrivate: rooms.isPrivate,
 			maxPlayerCount: rooms.maxPlayerCount,
 			currPlayerCount: rooms.players.length,

@@ -96,14 +96,6 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 
     }, []);
 
-
-    // Tell server newly generated name
-    useEffect(() => {
-        socket.emit("PLAYER", {type: "CHANGE_PLAYER", player: {
-
-        }})
-    }, [nickname]);
-
 	useEffect(() => {
 		socket.on("ROOM", roomEventsListener);
         socket.on("PLAYER", playerEventsListener);
