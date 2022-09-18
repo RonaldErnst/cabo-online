@@ -9,7 +9,7 @@ export interface RoomSettings {
 export type Room = {
 	roomId: string;
 	players: Array<Player>;
-	host: Player | null;
+	host: string | null;
 } & RoomSettings;
 
 export interface RoomClientData {

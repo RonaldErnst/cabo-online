@@ -4,6 +4,8 @@ export type WrongPasswordRoomError = "WrongPasswordRoomError";
 export type PlayerNotInRoomError = "PlayerNotInRoomError";
 export type AlreadyInRoomError = "AlreadyInRoomError";
 export type NotPrivateRoomError = "NotPrivateRoomError";
+export type InvalidRoomSetting = "InvalidRoomSetting";
+export type PlayerNotHostError = "PlayerNotHostError"
 
 export type RoomError =
 	| "RoomError"
@@ -12,4 +14,6 @@ export type RoomError =
 	| WrongPasswordRoomError
 	| AlreadyInRoomError
 	| PlayerNotInRoomError
-	| NotPrivateRoomError;
+	| NotPrivateRoomError
+    | InvalidRoomSetting
+    | PlayerNotHostError;

@@ -1,11 +1,11 @@
 import { ChatError } from "./chat.error";
 import { GameError } from "./game.error";
-import { PlayerAlreadyExistsError } from "./player.error";
+import { PlayerError } from "./player.error";
 import { RoomError } from "./room.error";
 
 export type ServerError =
   | "ServerError"
-  | PlayerAlreadyExistsError
+  | PlayerError
   | RoomError
   | GameError
   | ChatError;

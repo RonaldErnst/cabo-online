@@ -1,5 +1,7 @@
 import { IError } from "@common/types/errors";
+import { PlayerClientData } from "@common/types/models/player.model";
 import { RoomSettings } from "@common/types/models/room.model";
+import { PlayerServerClientEvent } from "@common/types/sockets";
 import {
 	ChangeRoomSetting,
 	RoomServerClientEvent,
@@ -22,6 +24,8 @@ interface ILobbyContext {
 	nickname: string;
 	isReady: boolean;
 	settings: RoomSettings;
+    lobbyHost: string | null;
+    players: PlayerClientData[];
 	setNickname: Dispatch<SetStateAction<string>>;
 	setIsReady: Dispatch<SetStateAction<boolean>>;
 	changeSetting: (roomSetting: ChangeRoomSetting) => void;
@@ -52,7 +56,8 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	const [isReady, setIsReady] = useState(false);
 
 	const [settings, setSettings] = useState<RoomSettings>(defaultSettings);
-	const [lobbyHost, setLobbyHost] = useState<string>();
+	const [lobbyHost, setLobbyHost] = useState<string | null>(null);
+    const [players, setPlayers] = useState<PlayerClientData[]>([]);
 
 	const socket = useSocket();
 
@@ -74,10 +79,11 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 			}
 
 			// Only replace maxPlayerCount and isPrivate, not password
-			const { maxPlayerCount, isPrivate } = roomEvent.room;
+			const { maxPlayerCount, isPrivate, host } = roomEvent.room;
 			setSettings((prevSettings) => {
 				return {
 					...prevSettings,
+                    lobbyHost: host,
 					isPrivate,
 					maxPlayerCount,
 				};
@@ -86,15 +92,29 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		[roomId]
 	);
 
+    const playerEventsListener = useCallback((playerEvent: PlayerServerClientEvent) => {
+
+    }, []);
+
+
+    // Tell server newly generated name
+    useEffect(() => {
+        socket.emit("PLAYER", {type: "CHANGE_PLAYER", player: {
+
+        }})
+    }, [nickname]);
+
 	useEffect(() => {
 		socket.on("ROOM", roomEventsListener);
+        socket.on("PLAYER", playerEventsListener);
 		socket.on("ERROR", errorEventsListener);
 
 		return () => {
 			socket.off("ROOM", roomEventsListener);
+            socket.off("PLAYER", playerEventsListener);
 			socket.off("ERROR", errorEventsListener);
 		};
-	}, [errorEventsListener, roomEventsListener, socket]);
+	}, [errorEventsListener, playerEventsListener, roomEventsListener, socket]);
 
 	const changeSetting = (roomSetting: ChangeRoomSetting) => {
 		switch (roomSetting.setting) {
@@ -123,6 +143,8 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		nickname,
 		isReady,
 		settings,
+        lobbyHost,
+        players,
 		setNickname,
 		setIsReady,
 		changeSetting,

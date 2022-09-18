@@ -1,8 +1,16 @@
-import { PlayerClientData } from "../../models/player.model";
+export type ChangePlayerSetting =
+	| {
+			setting: "nickname";
+			value: string;
+	  }
+	| {
+			setting: "isReady";
+			value: boolean;
+	  };
 
 interface PlayerChangeEvent {
 	type: "CHANGE_PLAYER";
-    player: PlayerClientData;
+	setting: ChangePlayerSetting;
 }
 
 export type PlayerClientServerEvent = PlayerChangeEvent;

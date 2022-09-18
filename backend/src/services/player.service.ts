@@ -1,5 +1,6 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
+import { ChangePlayerSetting } from "@common/types/sockets/player";
 import { IServerSocket } from "@types";
 import { err, ok, Result } from "neverthrow";
 
@@ -8,6 +9,19 @@ const players = new Map<string, Player>();
 
 function getPlayer(socketId: string) {
 	return players.get(socketId);
+}
+
+function getExistingPlayer(socketId: string): Result<Player, IError> {
+	const player = getPlayer(socketId);
+
+	// Player not found, most likely not in any room
+	if (player === undefined)
+		return err({
+			type: "UnknownPlayerError",
+			message: "Player unknown",
+		});
+
+	return ok(player);
 }
 
 function addPlayer(player: Player) {
@@ -39,4 +53,31 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	return ok(player);
 }
 
-export { createAndAddPlayer, getPlayer };
+function changePlayerSetting(
+	player: Player,
+	{ setting, value }: ChangePlayerSetting
+): Result<Player, IError> {
+	if (player.room === null)
+		return err({
+			type: "PlayerNotInRoomError",
+			message: "Player is not in any room. Cannot change settings",
+		});
+
+	switch (setting) {
+		case "isReady":
+			player.isReady = value;
+			break;
+		case "nickname":
+			player.nickname = value;
+			break;
+		default:
+			return err({
+				type: "InvalidPlayerSetting",
+				message: "Invalid Player setting sent",
+			});
+	}
+
+	return ok(player);
+}
+
+export { createAndAddPlayer, getExistingPlayer, changePlayerSetting };

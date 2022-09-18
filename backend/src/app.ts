@@ -12,6 +12,7 @@ import {
 	registerRoomEvents,
 	registerErrorEvents,
 	registerDisconnectEvents,
+    registerPlayerEvents,
 } from "@sockets/routes";
 import { roomRouter } from "@api/routes";
 import { createAndAddPlayer } from "@services/player.service";
@@ -65,19 +66,11 @@ const socketIO = new Server<
 >(httpServer, serverSettings);
 
 socketIO.on("connection", async (socket) => {
-	// TODO: Logging 
-	createAndAddPlayer(socket).match(
-		(player) => {
-			registerRoomEvents(player, socket);
-			registerChatEvents(player, socket);
-			registerErrorEvents(player, socket);
-			registerDisconnectEvents(player, socket);
-		},
-		(err) => {
-			socket.emit("ERROR", err);
-			socket.disconnect(true);
-		}
-	);
+    registerRoomEvents(socket);
+    registerPlayerEvents(socket);
+    registerChatEvents(socket);
+    registerErrorEvents(socket);
+    registerDisconnectEvents(socket);
 });
 
 httpServer.listen(PORT, () => {

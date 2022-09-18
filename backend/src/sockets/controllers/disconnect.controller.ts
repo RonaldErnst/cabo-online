@@ -1,14 +1,25 @@
 import { Player } from "@common/types/models/player.model";
+import { getPlayer } from "@services/player.service";
 import { leaveRoom } from "@services/rooms.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
 import transformRoomClientData from "utils/transformRoomClientData";
 
 export default function handleDisconnectEvents(
-	player: Player,
 	socket: IServerSocket
 ) {
 	return (reason: string) => {
+        const player = getPlayer(socket.id);
+
+        if (player === undefined) {
+            // Player not found, most likely not in any room
+            socket.emit("ERROR", {
+                type: "UnknownPlayerError",
+                message: "Player unknown",
+            });
+            return;
+        }
+        
 		// Leave room if player was in room
 		if (player.room !== null) {
 			leaveRoom(player).match(

@@ -1,23 +1,26 @@
-import { Player } from "@common/types/models/player.model";
 import { RoomClientServerEvent } from "@common/types/sockets/";
-import { createAndAddRoom, joinRoom, leaveRoom } from "@services/rooms.service";
+import { ChangeRoomSetting } from "@common/types/sockets/room";
+import {
+	createAndAddPlayer,
+	getExistingPlayer,
+} from "@services/player.service";
+import {
+	changeRoomSetting,
+	createAndAddRoom,
+	joinRoom,
+	leaveRoom,
+} from "@services/rooms.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
 import transformRoomClientData from "utils/transformRoomClientData";
 
-function handleCreateRoom(
-	player: Player,
-	socket: IServerSocket,
-	roomId: string
-) {
+function handleCreateRoom(socket: IServerSocket, roomId: string) {
 	createAndAddRoom(roomId).match(
 		(room) => {
-			console.log(
-				`Player ${player.playerId} created room ${room.roomId}`
-			);
+			console.log(`Player ${socket.id} created room ${room.roomId}`);
 
 			// Room just got created, add creating player as host
-			room.host = player;
+			room.host = socket.id;
 			// Tell all connected players about the new room
 			socketIO.emit("ROOM", {
 				type: "CREATE_ROOM",
@@ -32,66 +35,84 @@ function handleCreateRoom(
 }
 
 function handleJoinRoom(
-	player: Player,
 	socket: IServerSocket,
 	roomId: string,
 	password: string | null
 ) {
-	joinRoom(roomId, password, player).match(
-		(room) => {
-			console.log(`Player ${player.playerId} joined room ${roomId}`);
+	// Players get created here
+	createAndAddPlayer(socket)
+		.andThen((player) => joinRoom(roomId, password, player))
+		.match(
+			(room) => {
+				console.log(`Player ${socket.id} joined room ${roomId}`);
 
-			socketIO.emit("ROOM", {
-				type: "CHANGE_ROOM",
-				room: transformRoomClientData(room)
-			});
-		},
-		(err) => {
-			console.log(err);
-			socket.emit("ERROR", err);
-		}
-	);
+				socketIO.emit("ROOM", {
+					type: "CHANGE_ROOM",
+					room: transformRoomClientData(room),
+				});
+			},
+			(err) => {
+				console.log(err);
+				socket.emit("ERROR", err);
+			}
+		);
 }
 
-function handleLeaveRoom(player: Player, socket: IServerSocket) {
-	leaveRoom(player).match(
-		(room) => {
-			console.log(`Player ${player.playerId} left room ${room.roomId}`);
+function handleLeaveRoom(socket: IServerSocket) {
+	const player = getExistingPlayer(socket.id)
+		.andThen((player) => leaveRoom(player))
+		.match(
+			(room) => {
+				console.log(`Player ${socket.id} left room ${room.roomId}`);
 
-			socketIO.emit("ROOM", {
-				type: "CHANGE_ROOM",
-				room: transformRoomClientData(room)
-			});
-		},
-		(err) => {
-			console.log(err);
-			socket.emit("ERROR", err);
-		}
-	);
+				socketIO.emit("ROOM", {
+					type: "CHANGE_ROOM",
+					room: transformRoomClientData(room),
+				});
+			},
+			(err) => {
+				console.log(err);
+				socket.emit("ERROR", err);
+			}
+		);
 }
 
-export default function handleRoomEvents(
-	player: Player,
-	socket: IServerSocket
+function handleChangeRoomSetting(
+	socket: IServerSocket,
+	setting: ChangeRoomSetting
 ) {
+	const player = getExistingPlayer(socket.id)
+		.andThen((player) => changeRoomSetting(player, setting))
+		.match(
+			(room) => {
+				socketIO
+					.in(room.roomId)
+					.emit("ROOM", {
+						type: "CHANGE_ROOM",
+						room: transformRoomClientData(room),
+					});
+			},
+			(err) => {
+				console.log(err);
+				socket.emit("ERROR", err);
+			}
+		);
+}
+
+export default function handleRoomEvents(socket: IServerSocket) {
 	return (roomEvent: RoomClientServerEvent) => {
 		switch (roomEvent.type) {
 			case "CREATE_ROOM":
-				handleCreateRoom(player, socket, roomEvent.roomId);
+				handleCreateRoom(socket, roomEvent.roomId);
 				break;
 			case "LEAVE_ROOM":
-				handleLeaveRoom(player, socket);
+				handleLeaveRoom(socket);
 				break;
 			case "JOIN_ROOM":
-				handleJoinRoom(
-					player,
-					socket,
-					roomEvent.roomId,
-					roomEvent.password
-				);
+				handleJoinRoom(socket, roomEvent.roomId, roomEvent.password);
 				break;
 			case "CHANGE_ROOM_SETTING":
-				// TODO: implement changing settings
+				handleChangeRoomSetting(socket, roomEvent.setting);
 				break;
 			default:
 				socket.emit("ERROR", {

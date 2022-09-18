@@ -1,6 +1,7 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { Room, RoomSettings } from "@common/types/models/room.model";
+import { ChangeRoomSetting } from "@common/types/sockets/room";
 import socketIO from "app";
 import { err, ok, Result } from "neverthrow";
 import settings from "settings.backend";
@@ -191,7 +192,7 @@ function leaveRoom(player: Player): Result<Room, IError> {
 
 	// Room is not empty
 	// If host left the lobby, assign new host
-	if (room.host === player) {
+	if (room.host === player.playerId) {
 		// Assign new host
 		room.host = null;
 	}
@@ -229,6 +230,43 @@ function checkPassword(
 	return ok(true);
 }
 
+function changeRoomSetting(player: Player, {setting, value}: ChangeRoomSetting): Result<Room, IError> {
+    if(player.room === null) 
+        return err({
+			type: "PlayerNotInRoomError",
+			message: `Player is not in any room`,
+		});
+
+    const room = player.room;
+    if (room.host !== player.playerId)
+        return err({
+            type: "PlayerNotHostError",
+            message: "Player is not the host of this lobby. Cannot change settings"
+        });
+
+    switch (setting) {
+        case "host":
+            // Host got transferred
+            room.host = value;
+            break;
+        case "isPrivate":
+            room.isPrivate = value.isPrivate;
+            room.password = value.password;
+            break;
+        case "maxPlayerCount":
+            room.maxPlayerCount = value;
+            break;
+        case "currPlayerCount":
+        default:
+            return err({
+                type: "InvalidRoomSetting",
+                message: "Invalid room setting sent",
+            });
+    }
+    
+    return ok(room);
+}
+
 export {
 	createAndAddRoom,
 	joinRoom,
@@ -237,4 +275,5 @@ export {
 	leaveRoom,
 	checkPassword,
 	getDefaultRoomSettings,
+    changeRoomSetting
 };
