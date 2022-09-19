@@ -32,7 +32,7 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
-		nickname: "",
+		nickname: "", // TODO: find solution for nickname. Player should only get created
 		room: null,
 		isReady: false,
 	};
@@ -57,12 +57,6 @@ function changePlayerSetting(
 	player: Player,
 	{ setting, value }: ChangePlayerSetting
 ): Result<Player, IError> {
-	if (player.room === null)
-		return err({
-			type: "PlayerNotInRoomError",
-			message: "Player is not in any room. Cannot change settings",
-		});
-
 	switch (setting) {
 		case "isReady":
 			player.isReady = value;

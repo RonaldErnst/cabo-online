@@ -1,6 +1,6 @@
-import { ChatMessage } from "types/models/chat.models";
+import { IEventType } from "..";
 
-interface MessageChatEvent {
+interface MessageChatEvent extends IEventType {
 	type: "MESSAGE";
 	message: string;
 }

@@ -1,33 +1,22 @@
 import { IError } from "@common/types/errors";
-import { PlayerClientData } from "@common/types/models/player.model";
-import { RoomSettings } from "@common/types/models/room.model";
-import { PlayerServerClientEvent } from "@common/types/sockets";
-import {
-	ChangeRoomSetting,
-	RoomServerClientEvent,
-} from "@common/types/sockets/room";
+import { RoomClientData, RoomSettings } from "@common/types/models/room.model";
+import { ChangeRoomSetting } from "@common/types/sockets/room";
 import {
 	createContext,
-	Dispatch,
 	FC,
 	PropsWithChildren,
-	SetStateAction,
 	useCallback,
 	useContext,
 	useEffect,
+	useMemo,
 	useState,
 } from "react";
-import generateNickname from "utils/generateNickname";
+import { useRooms } from "./RoomsContext";
 import { useSocket } from "./SocketContext";
 
 interface ILobbyContext {
-	nickname: string;
-	isReady: boolean;
+	lobby: RoomClientData | undefined;
 	settings: RoomSettings;
-    lobbyHost: string | null;
-    players: PlayerClientData[];
-	setNickname: Dispatch<SetStateAction<string>>;
-	setIsReady: Dispatch<SetStateAction<boolean>>;
 	changeSetting: (roomSetting: ChangeRoomSetting) => void;
 }
 
@@ -51,66 +40,34 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	roomId,
 	defaultSettings,
 }) => {
-	console.log("Creating Lobby Provider");
-	const [nickname, setNickname] = useState(generateNickname());
-	const [isReady, setIsReady] = useState(false);
-
-	const [settings, setSettings] = useState<RoomSettings>(defaultSettings);
-	const [lobbyHost, setLobbyHost] = useState<string | null>(null);
-    const [players, setPlayers] = useState<PlayerClientData[]>([]);
-
 	const socket = useSocket();
+	const rooms = useRooms();
+	const lobby = useMemo(
+		() => rooms.find((r) => r.roomId === roomId),
+		[rooms, roomId]
+	);
+
+	// Host only
+	const [settings, setSettings] = useState<RoomSettings>(defaultSettings);
 
 	const errorEventsListener = useCallback((err: IError) => {
 		// TODO: display error as system message in Lobby
 		console.log(err);
 	}, []);
 
-	const roomEventsListener = useCallback(
-		(roomEvent: RoomServerClientEvent) => {
-			// Only Change room events matter here
-			if (roomEvent.type !== "CHANGE_ROOM") return;
-
-			// Sanity check, roomId should be the current room's id
-			if (roomEvent.room.roomId !== roomId) {
-				// Received CHANGE_ROOM from a different room
-				//console.log(`Cannot change settings from a different room`);
-				return;
-			}
-
-			// Only replace maxPlayerCount and isPrivate, not password
-			const { maxPlayerCount, isPrivate, host } = roomEvent.room;
-			setSettings((prevSettings) => {
-				return {
-					...prevSettings,
-                    lobbyHost: host,
-					isPrivate,
-					maxPlayerCount,
-				};
-			});
-		},
-		[roomId]
-	);
-
-    const playerEventsListener = useCallback((playerEvent: PlayerServerClientEvent) => {
-
-    }, []);
-
 	useEffect(() => {
-		socket.on("ROOM", roomEventsListener);
-        socket.on("PLAYER", playerEventsListener);
 		socket.on("ERROR", errorEventsListener);
 
 		return () => {
-			socket.off("ROOM", roomEventsListener);
-            socket.off("PLAYER", playerEventsListener);
 			socket.off("ERROR", errorEventsListener);
 		};
-	}, [errorEventsListener, playerEventsListener, roomEventsListener, socket]);
+	}, [errorEventsListener, socket]);
 
 	const changeSetting = (roomSetting: ChangeRoomSetting) => {
 		switch (roomSetting.setting) {
 			case "isPrivate":
+				// Only set password locally for host#
+				// TODO: transfer password when host changes
 				setSettings((prevSettings) => ({
 					...prevSettings,
 					password: roomSetting.value.isPrivate
@@ -119,7 +76,6 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 				}));
 			case "maxPlayerCount": // Do nothing
 				break;
-			case "currPlayerCount": // changing current player count does not happen here
 			default:
 				// Don't emit Change setting event
 				return;
@@ -132,13 +88,8 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	};
 
 	const value = {
-		nickname,
-		isReady,
+		lobby,
 		settings,
-        lobbyHost,
-        players,
-		setNickname,
-		setIsReady,
 		changeSetting,
 	};
 

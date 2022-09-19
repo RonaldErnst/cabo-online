@@ -88,7 +88,7 @@ const CreateJoinRoom = () => {
 				return;
 			}
 
-			if (room.currPlayerCount >= room.maxPlayerCount) {
+			if (room.players.length >= room.maxPlayerCount) {
 				setFieldError("roomId", "Room already full");
 				return;
 			}

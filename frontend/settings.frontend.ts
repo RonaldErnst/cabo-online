@@ -1,10 +1,10 @@
 import userSettings from "../settings.json";
 import { env } from "process";
 
-export interface FrontendSettings {
+export type FrontendSettings = {
   wsPort: number;
   socketServer: string;
-}
+} & typeof userSettings.frontend
 
 export function getSocketServerHost() {
     switch(process.env.NODE_ENV) {

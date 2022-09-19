@@ -1,4 +1,4 @@
-import { Player } from "./player.model";
+import { Player, PlayerClientData } from "./player.model";
 
 export interface RoomSettings {
 	isPrivate: boolean;
@@ -17,5 +17,5 @@ export interface RoomClientData {
     host: string | null;
 	isPrivate: boolean;
 	maxPlayerCount: number;
-	currPlayerCount: number;
+	players: PlayerClientData[];
 }

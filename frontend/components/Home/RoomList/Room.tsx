@@ -22,7 +22,7 @@ const Room: FC<{ room: RoomClientData }> = ({ room }) => {
 				return;
 			}
 
-            if(room.currPlayerCount >= room.maxPlayerCount) {
+            if(room.players.length >= room.maxPlayerCount) {
                 // TODO show error
                 return;
             }
@@ -44,7 +44,7 @@ const Room: FC<{ room: RoomClientData }> = ({ room }) => {
 		<tr className="h-12">
 			<td>{room.roomId}</td>
 			<td>
-				{room.currPlayerCount} / {room.maxPlayerCount}
+				{room.players.length} / {room.maxPlayerCount}
 			</td>
 			<td>
 				{room.isPrivate ? (

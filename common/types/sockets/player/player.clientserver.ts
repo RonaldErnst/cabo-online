@@ -13,4 +13,14 @@ interface PlayerChangeEvent {
 	setting: ChangePlayerSetting;
 }
 
-export type PlayerClientServerEvent = PlayerChangeEvent;
+interface CreatePlayerEvent {
+	type: "CREATE_PLAYER";
+	nickname: string;
+}
+
+interface DeletePlayerEvent {
+	type: "DELETE_PLAYER";
+	playerId: string;
+}
+
+export type PlayerClientServerEvent = PlayerChangeEvent | CreatePlayerEvent | DeletePlayerEvent;

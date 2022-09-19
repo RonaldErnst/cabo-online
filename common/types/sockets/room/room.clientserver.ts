@@ -1,4 +1,7 @@
-interface CreateRoomEvent {
+import { PlayerClientData } from "types/models/player.model";
+import { IEventType } from "..";
+
+interface CreateRoomEvent extends IEventType {
 	type: "CREATE_ROOM";
 	roomId: string;
 }
@@ -15,31 +18,33 @@ export type ChangeRoomSetting =
 			value: number;
 	  }
 	| {
-			setting: "currPlayerCount";
-			value: number;
-	  }
-	| {
 			setting: "host";
 			value: string;
 	  };
 
-type ChangeRoomSettingEvent = {
+interface ChangeRoomSettingEvent extends IEventType {
 	type: "CHANGE_ROOM_SETTING";
 	setting: ChangeRoomSetting;
 };
 
-interface JoinRoomEvent {
+interface ChangeRoomPlayerEvent extends IEventType {
+    type: "CHANGE_ROOM_PLAYER";
+    player: PlayerClientData;
+}
+
+interface JoinRoomEvent extends IEventType {
 	type: "JOIN_ROOM";
 	roomId: string;
 	password: string | null;
 }
 
-interface LeaveRoomEvent {
+interface LeaveRoomEvent extends IEventType {
 	type: "LEAVE_ROOM";
 }
 
 export type RoomClientServerEvent =
 	| CreateRoomEvent
 	| ChangeRoomSettingEvent
+    | ChangeRoomPlayerEvent
 	| JoinRoomEvent
 	| LeaveRoomEvent;

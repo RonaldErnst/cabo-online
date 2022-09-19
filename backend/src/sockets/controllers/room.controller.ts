@@ -1,10 +1,6 @@
 import { RoomClientServerEvent } from "@common/types/sockets/";
 import { ChangeRoomSetting } from "@common/types/sockets/room";
-import {
-	createAndAddPlayer,
-	getExistingPlayer,
-    removePlayer,
-} from "@services/player.service";
+import { getExistingPlayer } from "@services/player.service";
 import {
 	changeRoomSetting,
 	createAndAddRoom,
@@ -41,7 +37,7 @@ function handleJoinRoom(
 	password: string | null
 ) {
 	// Players get created here
-	createAndAddPlayer(socket)
+	getExistingPlayer(socket.id)
 		.andThen((player) => joinRoom(roomId, password, player))
 		.match(
 			(room) => {
@@ -66,9 +62,6 @@ function handleLeaveRoom(socket: IServerSocket) {
 		})
 		.match(
 			({ room, player }) => {
-                // Remove the player from the players map
-                removePlayer(player.playerId);
-
 				console.log(
 					`Player ${player.playerId} left room ${room.roomId}`
 				);
@@ -89,7 +82,7 @@ function handleChangeRoomSetting(
 	socket: IServerSocket,
 	setting: ChangeRoomSetting
 ) {
-	const player = getExistingPlayer(socket.id)
+	getExistingPlayer(socket.id)
 		.andThen((player) => changeRoomSetting(player, setting))
 		.match(
 			(room) => {

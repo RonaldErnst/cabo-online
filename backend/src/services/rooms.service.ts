@@ -260,7 +260,6 @@ function changeRoomSetting(
 		case "maxPlayerCount":
 			room.maxPlayerCount = value;
 			break;
-		case "currPlayerCount":
 		default:
 			return err({
 				type: "InvalidRoomSetting",

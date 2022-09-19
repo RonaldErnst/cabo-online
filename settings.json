@@ -7,6 +7,6 @@
         "cleanRoomsInterval": 60000
     },
     "frontend": {
-        
+        "chatMessageMaxLength": 1000
     }
 }
