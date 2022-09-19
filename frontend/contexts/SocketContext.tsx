@@ -39,20 +39,20 @@ export const SocketProvider: FC<PropsWithChildren> = ({ children }) => {
 		console.log("Disconnecting:", reason);
 	}, []);
 
-    // General purpose Error, for logging
-    const errorListener = useCallback((err: IError) => {
-        console.log(err);
-    }, []);
+	// General purpose Error, for logging
+	const errorListener = useCallback((err: IError) => {
+		console.log(err);
+	}, []);
 
 	useEffect(() => {
 		socket.on("connect_error", connErrorListener);
 		socket.on("disconnect", disconnectListener);
-        socket.on("ERROR", errorListener);
- 
+		socket.on("ERROR", errorListener);
+
 		return () => {
 			socket.off("connect_error", connErrorListener);
 			socket.off("disconnect", disconnectListener);
-            socket.off("ERROR", errorListener);
+			socket.off("ERROR", errorListener);
 		};
 	}, [connErrorListener, disconnectListener, errorListener]);
 

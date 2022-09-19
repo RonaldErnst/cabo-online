@@ -1,4 +1,10 @@
-import { createContext, FC, PropsWithChildren, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	FC,
+	PropsWithChildren,
+	useContext,
+	useState,
+} from "react";
 import generateNickname from "utils/generateNickname";
 
 interface IPlayerContext {
@@ -18,14 +24,16 @@ export function usePlayer() {
 
 export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 	const [nickname, setNickname] = useState(generateNickname());
-    const [color, setColor] = useState("red");
+	const [color, setColor] = useState("red");
 
 	const value = {
 		nickname,
-        color,
+		color,
 	};
 
 	return (
-		<PlayerContext.Provider value={value}>{children}</PlayerContext.Provider>
+		<PlayerContext.Provider value={value}>
+			{children}
+		</PlayerContext.Provider>
 	);
 };

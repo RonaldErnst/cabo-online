@@ -32,23 +32,26 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	const errorListener = useCallback((err: IError) => {
-        // TODO: display error as system message in chat
-        if(err.type === "PlayerNotInRoomError") {
-            setMessages((prevMessages) => {
-                return [...prevMessages, {text: err.message, isSystemMessage: true}];
-            });
-        }
+		// TODO: display error as system message in chat
+		if (err.type === "PlayerNotInRoomError") {
+			setMessages((prevMessages) => {
+				return [
+					...prevMessages,
+					{ text: err.message, isSystemMessage: true },
+				];
+			});
+		}
 
-        console.log(err);
-    }, []);
+		console.log(err);
+	}, []);
 
 	const chatEventListener = useCallback(
 		(chatEvent: ChatServerClientEvent) => {
 			switch (chatEvent.type) {
 				case "MESSAGE":
-                    setMessages((prevMessages) => {
-                        return [...prevMessages, chatEvent.message];
-                    });
+					setMessages((prevMessages) => {
+						return [...prevMessages, chatEvent.message];
+					});
 					break;
 				default:
 					// TODO: handle Error?
@@ -68,13 +71,13 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 		};
 	}, [chatEventListener, errorListener, socket]);
 
-    const sendMessage = (message: string) => {
-        socket.emit("CHAT", {type: "MESSAGE", message });
-    }
+	const sendMessage = (message: string) => {
+		socket.emit("CHAT", { type: "MESSAGE", message });
+	};
 
 	const value = {
 		messages,
-        sendMessage
+		sendMessage,
 	};
 
 	return (
