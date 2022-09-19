@@ -53,7 +53,7 @@ export const PlayerProvider: FC<PropsWithChildren> = ({ children }) => {
 		socket.emit("PLAYER", { type: "CREATE_PLAYER", nickname: nickname });
 
 		return () => {
-            socket.emit("PLAYER", { type: "DELETE_PLAYER", playerId: socket.id });
+            socket.emit("PLAYER", { type: "DELETE_PLAYER" });
 
 			// socket.off("PLAYER", playerEventListener);
 			socket.off("ERROR", errorListener);

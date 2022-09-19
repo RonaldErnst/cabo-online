@@ -1,5 +1,5 @@
 import { Player } from "@common/types/models/player.model";
-import { getExistingPlayer } from "@services/player.service";
+import { getExistingPlayer, removePlayer } from "@services/player.service";
 import { leaveRoom } from "@services/rooms.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
@@ -29,6 +29,8 @@ export default function handleDisconnectEvents(
                     }
                 );
             }
+
+            removePlayer(player.playerId);
 
             console.log(
                 `Player ${player.playerId} is trying to disconnect`,

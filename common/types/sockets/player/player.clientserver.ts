@@ -20,7 +20,6 @@ interface CreatePlayerEvent {
 
 interface DeletePlayerEvent {
 	type: "DELETE_PLAYER";
-	playerId: string;
 }
 
 export type PlayerClientServerEvent = PlayerChangeEvent | CreatePlayerEvent | DeletePlayerEvent;

@@ -26,13 +26,15 @@ function getExistingPlayer(socketId: string): Result<Player, IError> {
 
 function addPlayer(player: Player) {
 	players.set(player.playerId, player);
+
+	console.log(`Added player ${player.playerId}`);
 }
 
-function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
+function createAndAddPlayer(socket: IServerSocket, nickname: string): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
-		nickname: "", // TODO: find solution for nickname. Player should only get created
+		nickname: nickname, // TODO: find solution for nickname. Player should only get created
 		room: null,
 		isReady: false,
 	};
@@ -47,8 +49,6 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	socket.data = player;
 
 	addPlayer(player);
-
-	console.log(`Added player ${player.playerId}`);
 
 	return ok(player);
 }

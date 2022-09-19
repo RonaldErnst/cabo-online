@@ -31,7 +31,7 @@ const PlayerMessage: FC<{
 }> = ({ isAuthor, nickname, text }) => {
 	return (
 		<div
-			className={`justify-self-end max-w-fit relative ${
+			className={`justify-self-end max-w-fit relative rounded-lg ${
 				isAuthor
 					? `justify-self-end bg-blue-400`
 					: `justify-self-start bg-slate-300`
@@ -42,7 +42,7 @@ const PlayerMessage: FC<{
 				{/* TODO: add color to names */}
 			</div>
 			<p
-				className={`w-full px-2 pt-2 pb-1 rounded-lg bg-slate-300 break-words`}
+				className={`w-full px-2 pt-2 pb-1 break-words`}
 			>
 				{text}
 			</p>

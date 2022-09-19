@@ -1,6 +1,5 @@
 import { RoomClientData } from "@common/types/models/room.model";
-import { RoomsProvider } from "@contexts/RoomsContext";
-import { SocketProvider } from "@contexts/SocketContext";
+import { PlayerProvider, RoomsProvider, SocketProvider } from "@contexts";
 import type { AppContext, AppInitialProps, AppProps } from "next/app";
 import App from "next/app";
 import getAllRooms from "utils/getAllRoms";
@@ -11,9 +10,11 @@ type Props = { initialRooms: RoomClientData[] };
 function MyApp({ Component, pageProps, initialRooms }: AppProps & Props) {
 	return (
 		<SocketProvider>
-			<RoomsProvider initialRooms={initialRooms}>
-				<Component {...pageProps} />
-			</RoomsProvider>
+			<PlayerProvider>
+				<RoomsProvider initialRooms={initialRooms}>
+					<Component {...pageProps} />
+				</RoomsProvider>
+			</PlayerProvider>
 		</SocketProvider>
 	);
 }
