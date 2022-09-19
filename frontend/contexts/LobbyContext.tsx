@@ -1,6 +1,6 @@
 import { IError } from "@common/types/errors";
 import { RoomClientData, RoomSettings } from "@common/types/models/room.model";
-import { ChangeRoomSetting } from "@common/types/sockets/room";
+import { ChangeRoomSetting } from "@common/types/sockets";
 import {
 	createContext,
 	FC,

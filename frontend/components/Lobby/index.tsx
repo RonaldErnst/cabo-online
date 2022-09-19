@@ -1,6 +1,7 @@
 import { IError } from "@common/types/errors";
 import { RoomSettings } from "@common/types/models/room.model";
 import Chat from "@components/Chat";
+import { usePlayer } from "@contexts";
 import { ChatProvider } from "@contexts/ChatContext";
 import { LobbyProvider } from "@contexts/LobbyContext";
 import { useSocket } from "@contexts/SocketContext";
@@ -18,6 +19,7 @@ const Lobby: FC<{ data: Props }> = ({
 	data: { roomId, requiresPassword, password, defaultSettings },
 }) => {
 	const socket = useSocket();
+    const { nickname } = usePlayer();
 
 	useEffect(() => {
 		// If room requires password and no pw given, do nothing, prompt pw
@@ -31,7 +33,7 @@ const Lobby: FC<{ data: Props }> = ({
 		socket.once("ERROR", errorListener);
 
 		// Join the room. Either no pw required (pw=null) or pw already given
-		socket.emit("ROOM", { type: "JOIN_ROOM", roomId, password });
+		socket.emit("ROOM", { type: "JOIN_ROOM", roomId, password, player: { nickname } });
 
 		return () => {
 			// If room requires password and no pw given, do nothing, prompt pw
@@ -47,7 +49,7 @@ const Lobby: FC<{ data: Props }> = ({
 			// Only leave if player has joined the room
 			socket.emit("ROOM", { type: "LEAVE_ROOM" });
 		};
-	}, [password, requiresPassword, roomId, socket]);
+	}, [nickname, password, requiresPassword, roomId, socket]);
 
 	if (requiresPassword && password === null)
 		return <PasswordPrompt roomId={roomId} />;

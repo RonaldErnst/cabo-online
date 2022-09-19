@@ -1,6 +1,4 @@
-import express from "express";
-import { createServer } from "http";
-import { Server, ServerOptions } from "socket.io";
+import { roomRouter } from "@api/routes";
 import {
 	ClientServerEvents,
 	ServerClientEvents,
@@ -9,15 +7,15 @@ import {
 } from "@common/types/sockets";
 import {
 	registerChatEvents,
-	registerRoomEvents,
-	registerErrorEvents,
 	registerDisconnectEvents,
-    registerPlayerEvents,
+	registerErrorEvents,
+	registerRoomEvents,
 } from "@sockets/routes";
-import { roomRouter } from "@api/routes";
-import { createAndAddPlayer } from "@services/player.service";
-import settings from "./settings.backend";
 import cors from "cors";
+import express from "express";
+import { createServer } from "http";
+import { Server, ServerOptions } from "socket.io";
+import settings from "./settings.backend";
 
 // Server Settings
 const PORT = settings.port;
@@ -27,7 +25,11 @@ const serverSettings: Partial<ServerOptions> = {
 	pingInterval: PING_INTERVAL,
 	pingTimeout: PING_TIMEOUT,
 	cors: {
-		origin: ["http://localhost:3000", "http://192.168.178.37:3000", "http://yourapp.com"], // TODO
+		origin: [
+			"http://localhost:3000",
+			"http://192.168.178.37:3000",
+			"http://yourapp.com",
+		], // TODO
 		credentials: true,
 	},
 	transports: ["websocket"],
@@ -38,7 +40,7 @@ const httpServer = createServer(app);
 
 var allowedOrigins = [
 	"http://localhost:3000", // TODO
-    "http://192.168.178.37:3000",
+	"http://192.168.178.37:3000",
 	"http://yourapp.com",
 ];
 app.use(
@@ -66,11 +68,10 @@ const socketIO = new Server<
 >(httpServer, serverSettings);
 
 socketIO.on("connection", async (socket) => {
-    registerRoomEvents(socket);
-    registerPlayerEvents(socket);
-    registerChatEvents(socket);
-    registerErrorEvents(socket);
-    registerDisconnectEvents(socket);
+	registerRoomEvents(socket);
+	registerChatEvents(socket);
+	registerErrorEvents(socket);
+	registerDisconnectEvents(socket);
 });
 
 httpServer.listen(PORT, () => {

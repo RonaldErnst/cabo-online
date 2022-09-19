@@ -1,11 +1,40 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
-import { ChangePlayerSetting } from "@common/types/sockets/player";
+import { ChangePlayerSetting } from "@common/types/sockets";
 import { IServerSocket } from "@types";
 import { err, ok, Result } from "neverthrow";
+import settings from "settings.backend";
 
 // Map of socketIDs to Players
 const players = new Map<string, Player>();
+
+const cleanPlayesInterval = setInterval(
+	cleanPlayers,
+	settings.cleanPlayersInterval
+);
+
+/**
+ * Function to clean up player map
+ *
+ * All dirty players get cleaned up.
+ * A player is dirty when they're not in any room
+ */
+function cleanPlayers() {
+	const idsForDeletion: string[] = [];
+	players.forEach((player, playerId) => {
+		const room = player.room;
+
+		if (
+			room === null ||
+			room.players.find((p) => p === player) === undefined
+		)
+			idsForDeletion.push(playerId);
+	});
+
+	idsForDeletion.forEach((id) => {
+		players.delete(id);
+	});
+}
 
 function getPlayer(socketId: string) {
 	return players.get(socketId);
@@ -30,7 +59,10 @@ function addPlayer(player: Player) {
 	console.log(`Added player ${player.playerId}`);
 }
 
-function createAndAddPlayer(socket: IServerSocket, nickname: string): Result<Player, IError> {
+function createAndAddPlayer(
+	socket: IServerSocket,
+	nickname: string
+): Result<Player, IError> {
 	const player: Player = {
 		socket,
 		playerId: socket.id,
@@ -76,7 +108,7 @@ function changePlayerSetting(
 
 function removePlayer(playerId: string) {
 	players.delete(playerId);
-    console.log(`Removed player ${playerId}`);
+	console.log(`Removed player ${playerId}`);
 }
 
 export {

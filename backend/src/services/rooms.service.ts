@@ -1,7 +1,7 @@
 import { IError } from "@common/types/errors";
 import { Player } from "@common/types/models/player.model";
 import { Room, RoomSettings } from "@common/types/models/room.model";
-import { ChangeRoomSetting } from "@common/types/sockets/room";
+import { ChangeRoomSetting } from "@common/types/sockets";
 import socketIO from "app";
 import { err, ok, Result } from "neverthrow";
 import settings from "settings.backend";
@@ -40,7 +40,7 @@ rooms.set("anotherRoom", {
  * Function to clean up all currently existing rooms
  *
  * All dirty rooms get cleaned up.
- * A room is dirty when it is dirty when it still exists in the rooms map
+ * A room is dirty when it still exists in the rooms map
  * but has no connected players
  */
 function cleanRooms() {

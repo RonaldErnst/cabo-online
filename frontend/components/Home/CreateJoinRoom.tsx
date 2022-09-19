@@ -1,5 +1,5 @@
 import { IError } from "@common/types/errors";
-import { RoomServerClientEvent } from "@common/types/sockets/room";
+import { RoomServerClientEvent } from "@common/types/sockets";
 import { useSocket } from "@contexts/SocketContext";
 import axios from "axios";
 import { Field, Form, Formik, FormikHelpers } from "formik";

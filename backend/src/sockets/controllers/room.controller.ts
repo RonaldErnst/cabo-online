@@ -1,6 +1,14 @@
-import { RoomClientServerEvent } from "@common/types/sockets/";
-import { ChangeRoomSetting } from "@common/types/sockets/room";
-import { getExistingPlayer } from "@services/player.service";
+import {
+	ChangePlayerSetting,
+	ChangeRoomSetting,
+	RoomClientServerEvent,
+} from "@common/types/sockets";
+import {
+	changePlayerSetting,
+	createAndAddPlayer,
+	getExistingPlayer,
+    removePlayer,
+} from "@services/player.service";
 import {
 	changeRoomSetting,
 	createAndAddRoom,
@@ -34,10 +42,11 @@ function handleCreateRoom(socket: IServerSocket, roomId: string) {
 function handleJoinRoom(
 	socket: IServerSocket,
 	roomId: string,
-	password: string | null
+	password: string | null,
+	{ nickname }: { nickname: string }
 ) {
-	// Players get created here
-	getExistingPlayer(socket.id)
+	// Players have to be created here because of link invites
+	createAndAddPlayer(socket, nickname)
 		.andThen((player) => joinRoom(roomId, password, player))
 		.match(
 			(room) => {
@@ -57,14 +66,18 @@ function handleJoinRoom(
 
 function handleLeaveRoom(socket: IServerSocket) {
 	getExistingPlayer(socket.id)
-		.andThen((player) => {
-			return leaveRoom(player).map((room) => ({ room, player }));
-		})
+		.andThen((player) =>
+			leaveRoom(player).map((room) => ({ room, player }))
+		)
 		.match(
 			({ room, player }) => {
 				console.log(
 					`Player ${player.playerId} left room ${room.roomId}`
 				);
+
+                // Players have to be removed since they only get created when joining
+                // Players dont exist outside of rooms
+                removePlayer(player.playerId);
 
 				socketIO.emit("ROOM", {
 					type: "CHANGE_ROOM",
@@ -98,6 +111,27 @@ function handleChangeRoomSetting(
 		);
 }
 
+function handleChangePlayer(
+	socket: IServerSocket,
+	setting: ChangePlayerSetting
+) {
+	getExistingPlayer(socket.id)
+		.andThen((player) => changePlayerSetting(player, setting))
+		.match(
+			(player) => {
+				if (player.room !== null)
+					socketIO.in(player.room.roomId).emit("ROOM", {
+						type: "CHANGE_ROOM",
+						room: transformRoomClientData(player.room),
+					});
+			},
+			(err) => {
+				console.log(err);
+				socket.emit("ERROR", err);
+			}
+		);
+}
+
 export default function handleRoomEvents(socket: IServerSocket) {
 	return (roomEvent: RoomClientServerEvent) => {
 		switch (roomEvent.type) {
@@ -108,10 +142,18 @@ export default function handleRoomEvents(socket: IServerSocket) {
 				handleLeaveRoom(socket);
 				break;
 			case "JOIN_ROOM":
-				handleJoinRoom(socket, roomEvent.roomId, roomEvent.password);
+				handleJoinRoom(
+					socket,
+					roomEvent.roomId,
+					roomEvent.password,
+					roomEvent.player
+				);
 				break;
 			case "CHANGE_ROOM_SETTING":
 				handleChangeRoomSetting(socket, roomEvent.setting);
+				break;
+			case "CHANGE_ROOM_PLAYER":
+				handleChangePlayer(socket, roomEvent.setting);
 				break;
 			default:
 				socket.emit("ERROR", {

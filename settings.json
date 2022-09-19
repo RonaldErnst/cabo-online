@@ -4,7 +4,8 @@
         "pingInterval": 5000,
         "pingTimeout": 20000,
         "removeEmptyRoom": false,
-        "cleanRoomsInterval": 60000
+        "cleanRoomsInterval": 60000,
+        "cleanPlayersInterval": 60000
     },
     "frontend": {
         "chatMessageMaxLength": 1000

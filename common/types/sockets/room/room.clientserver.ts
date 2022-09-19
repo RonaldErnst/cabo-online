@@ -25,17 +25,30 @@ export type ChangeRoomSetting =
 interface ChangeRoomSettingEvent extends IEventType {
 	type: "CHANGE_ROOM_SETTING";
 	setting: ChangeRoomSetting;
-};
+}
+
+export type ChangePlayerSetting =
+	| {
+			setting: "nickname";
+			value: string;
+	  }
+	| {
+			setting: "isReady";
+			value: boolean;
+	  };
 
 interface ChangeRoomPlayerEvent extends IEventType {
-    type: "CHANGE_ROOM_PLAYER";
-    player: PlayerClientData;
+	type: "CHANGE_ROOM_PLAYER";
+	setting: ChangePlayerSetting;
 }
 
 interface JoinRoomEvent extends IEventType {
 	type: "JOIN_ROOM";
 	roomId: string;
 	password: string | null;
+    player: {
+        nickname: string;
+    };
 }
 
 interface LeaveRoomEvent extends IEventType {
@@ -45,6 +58,6 @@ interface LeaveRoomEvent extends IEventType {
 export type RoomClientServerEvent =
 	| CreateRoomEvent
 	| ChangeRoomSettingEvent
-    | ChangeRoomPlayerEvent
+	| ChangeRoomPlayerEvent
 	| JoinRoomEvent
 	| LeaveRoomEvent;
