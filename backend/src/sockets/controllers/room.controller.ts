@@ -7,7 +7,7 @@ import {
 	changePlayerSetting,
 	createAndAddPlayer,
 	getExistingPlayer,
-    removePlayer,
+	removePlayer,
 } from "@services/player.service";
 import {
 	changeRoomSetting,
@@ -42,11 +42,10 @@ function handleCreateRoom(socket: IServerSocket, roomId: string) {
 function handleJoinRoom(
 	socket: IServerSocket,
 	roomId: string,
-	password: string | null,
-	{ nickname }: { nickname: string }
+	password: string | null
 ) {
 	// Players have to be created here because of link invites
-	createAndAddPlayer(socket, nickname)
+	createAndAddPlayer(socket)
 		.andThen((player) => joinRoom(roomId, password, player))
 		.match(
 			(room) => {
@@ -58,6 +57,9 @@ function handleJoinRoom(
 				});
 			},
 			(err) => {
+				// Something went wrong during player creation, delete player again
+				removePlayer(socket.id);
+
 				console.log(err);
 				socket.emit("ERROR", err);
 			}
@@ -75,9 +77,9 @@ function handleLeaveRoom(socket: IServerSocket) {
 					`Player ${player.playerId} left room ${room.roomId}`
 				);
 
-                // Players have to be removed since they only get created when joining
-                // Players dont exist outside of rooms
-                removePlayer(player.playerId);
+				// Players have to be removed since they only get created when joining
+				// Players dont exist outside of rooms
+				removePlayer(player.playerId);
 
 				socketIO.emit("ROOM", {
 					type: "CHANGE_ROOM",
@@ -111,7 +113,7 @@ function handleChangeRoomSetting(
 		);
 }
 
-function handleChangePlayer(
+function handleChangePlayerSetting(
 	socket: IServerSocket,
 	setting: ChangePlayerSetting
 ) {
@@ -142,18 +144,13 @@ export default function handleRoomEvents(socket: IServerSocket) {
 				handleLeaveRoom(socket);
 				break;
 			case "JOIN_ROOM":
-				handleJoinRoom(
-					socket,
-					roomEvent.roomId,
-					roomEvent.password,
-					roomEvent.player
-				);
+				handleJoinRoom(socket, roomEvent.roomId, roomEvent.password);
 				break;
 			case "CHANGE_ROOM_SETTING":
 				handleChangeRoomSetting(socket, roomEvent.setting);
 				break;
 			case "CHANGE_ROOM_PLAYER":
-				handleChangePlayer(socket, roomEvent.setting);
+				handleChangePlayerSetting(socket, roomEvent.setting);
 				break;
 			default:
 				socket.emit("ERROR", {

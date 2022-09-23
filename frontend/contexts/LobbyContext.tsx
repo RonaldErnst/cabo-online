@@ -1,6 +1,7 @@
 import { IError } from "@common/types/errors";
+import { PlayerClientData } from "@common/types/models/player.model";
 import { RoomClientData, RoomSettings } from "@common/types/models/room.model";
-import { ChangeRoomSetting } from "@common/types/sockets";
+import { ChangePlayerSetting, ChangeRoomSetting } from "@common/types/sockets";
 import {
 	createContext,
 	FC,
@@ -15,9 +16,11 @@ import { useRooms } from "./RoomsContext";
 import { useSocket } from "./SocketContext";
 
 interface ILobbyContext {
+	player: PlayerClientData | undefined;
 	lobby: RoomClientData | undefined;
-	settings: RoomSettings;
-	changeSetting: (roomSetting: ChangeRoomSetting) => void;
+	roomSettings: RoomSettings;
+	changeRoomSetting: (roomSetting: ChangeRoomSetting) => void;
+    changePlayerSetting: (playerSetting: ChangePlayerSetting) => void;
 }
 
 const LobbyContext = createContext<ILobbyContext | null>(null);
@@ -32,13 +35,13 @@ export function useLobby() {
 
 interface Props {
 	roomId: string;
-	defaultSettings: RoomSettings;
+	defaultRoomSettings: RoomSettings;
 }
 
 export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	children,
 	roomId,
-	defaultSettings,
+	defaultRoomSettings,
 }) => {
 	const socket = useSocket();
 	const rooms = useRooms();
@@ -46,9 +49,13 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		() => rooms.find((r) => r.roomId === roomId),
 		[rooms, roomId]
 	);
+	const player = useMemo(
+		() => lobby?.players.find((p) => p.playerId === socket.id),
+		[lobby, socket]
+	);
 
 	// Host only
-	const [settings, setSettings] = useState<RoomSettings>(defaultSettings);
+	const [roomSettings, setRoomSettings] = useState<RoomSettings>(defaultRoomSettings);
 
 	const errorEventsListener = useCallback((err: IError) => {
 		// TODO: display error as system message in Lobby
@@ -63,12 +70,12 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		};
 	}, [errorEventsListener, socket]);
 
-	const changeSetting = (roomSetting: ChangeRoomSetting) => {
+	const changeRoomSetting = useCallback((roomSetting: ChangeRoomSetting) => {
 		switch (roomSetting.setting) {
 			case "isPrivate":
 				// Only set password locally for host#
 				// TODO: transfer password when host changes
-				setSettings((prevSettings) => ({
+				setRoomSettings((prevSettings) => ({
 					...prevSettings,
 					password: roomSetting.value.isPrivate
 						? roomSetting.value.password
@@ -85,12 +92,30 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 			type: "CHANGE_ROOM_SETTING",
 			setting: roomSetting,
 		});
-	};
+	}, [socket]);
+
+    const changePlayerSetting = useCallback((playerSetting: ChangePlayerSetting) => {
+        switch(playerSetting.setting) {
+            case "isReady": // Do nothing
+                break;
+            case "nickname": // Do nothing
+                break;
+            case "color": // Do nothing
+                break;
+            default:
+				// Don't emit Change setting event
+                return;
+        }
+
+        socket.emit("ROOM", {type: "CHANGE_ROOM_PLAYER", setting: playerSetting})
+    }, [socket]);
 
 	const value = {
+		player,
 		lobby,
-		settings,
-		changeSetting,
+		roomSettings,
+		changeRoomSetting,
+        changePlayerSetting,
 	};
 
 	return (

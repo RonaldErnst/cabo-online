@@ -1,4 +1,3 @@
-import { PlayerClientData } from "types/models/player.model";
 import { IEventType } from "..";
 
 interface CreateRoomEvent extends IEventType {
@@ -35,6 +34,10 @@ export type ChangePlayerSetting =
 	| {
 			setting: "isReady";
 			value: boolean;
+	  }
+	| {
+			setting: "color";
+			value: string;
 	  };
 
 interface ChangeRoomPlayerEvent extends IEventType {
@@ -42,13 +45,15 @@ interface ChangeRoomPlayerEvent extends IEventType {
 	setting: ChangePlayerSetting;
 }
 
+export interface InitialPlayerData {
+	nickname: string;
+	color: string;
+}
+
 interface JoinRoomEvent extends IEventType {
 	type: "JOIN_ROOM";
 	roomId: string;
 	password: string | null;
-    player: {
-        nickname: string;
-    };
 }
 
 interface LeaveRoomEvent extends IEventType {

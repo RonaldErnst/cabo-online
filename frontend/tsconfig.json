@@ -29,6 +29,6 @@
         "typeRoots": ["./node_modules/@types", "./src/types"]
 	},
 	"references": [{ "path": "../common" }],
-	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../settings.json"],
+	"include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "../settings.json", "utils/generateNickname.ts"],
 	"exclude": ["node_modules"]
 }

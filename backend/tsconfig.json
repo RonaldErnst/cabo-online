@@ -27,5 +27,5 @@
     }
   },
   "references": [{ "path": "../common" }],
-  "include": ["./src/**/*", "../settings.json"]
+  "include": ["./src/**/*", "../settings.json", "../frontend/utils/generateNickname.ts"]
 }

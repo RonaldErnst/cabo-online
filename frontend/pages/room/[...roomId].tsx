@@ -9,20 +9,20 @@ interface Props {
 	roomId: string;
 	requiresPassword: boolean;
 	password: string | null;
-	defaultSettings: RoomSettings;
+	defaultRoomSettings: RoomSettings;
 }
 
 const RoomPage: FC<Props> = ({
 	roomId,
 	requiresPassword,
 	password,
-	defaultSettings,
+	defaultRoomSettings
 }) => {
 	const data = {
 		roomId,
 		requiresPassword,
 		password,
-		defaultSettings,
+		defaultRoomSettings
 	};
 	return <Lobby data={data} />;
 };
@@ -64,7 +64,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 		}
 
 		// Room exists, get default room settings
-		const defaultSettings = await getDefaultRoomSettings();
+		const defaultRoomSettings = await getDefaultRoomSettings();
 
 		// If room is public, let player join
 		if (!room.isPrivate)
@@ -73,7 +73,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: false,
 					password: null,
-					defaultSettings,
+					defaultRoomSettings
 				},
 			};
 
@@ -87,7 +87,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: true,
 					password: null,
-					defaultSettings,
+					defaultRoomSettings
 				},
 			};
 
@@ -96,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 				roomId: room.roomId,
 				requiresPassword: true,
 				password: Array.isArray(pw) ? pw[0] : pw,
-				defaultSettings,
+				defaultRoomSettings
 			},
 		};
 	} catch (err) {

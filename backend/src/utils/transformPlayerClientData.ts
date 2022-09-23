@@ -9,7 +9,8 @@ function transformPlayerClientData(players: Player | Player[]): PlayerClientData
         return {
             playerId: players.playerId,
             nickname: players.nickname,
-            isReady: players.isReady
+            isReady: players.isReady,
+            color: players.color
         };
     }
 }

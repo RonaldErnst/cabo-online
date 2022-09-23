@@ -123,7 +123,7 @@ const CreateJoinRoom = () => {
 	}
 
 	return (
-		<div className="grow flex flex-col justify-center items-center">
+		<div className="flex flex-col justify-center items-center">
 			<Formik<FormValues>
 				initialValues={initialValues}
 				onSubmit={handleSubmit}
@@ -137,7 +137,7 @@ const CreateJoinRoom = () => {
 					errors,
 					setFieldError,
 				}) => (
-					<Form className="flex flex-col justify-center items-center gap-4 bg-slate-600 p-16 rounded-xl drop-shadow-lg">
+					<Form className="flex flex-col justify-center items-center gap-4">
 						{errors.roomId ? (
 							<ErrorAlert
 								error={errors.roomId}

@@ -141,11 +141,9 @@ function joinRoom(
 	player: Player
 ): Result<Room, IError> {
 	const room = getRoom(roomId);
+
 	if (room === undefined)
-		return err({
-			type: "UnknownRoomError",
-			message: `Room ${roomId} does not exist`,
-		});
+		return err({ type: "UnknownRoomError", message: "Room not found" });
 
 	if (player.room === room)
 		return err({
@@ -160,7 +158,7 @@ function joinRoom(
 		});
 
 	room.players.push(player);
-	player.socket.join(roomId);
+	player.socket.join(room.roomId);
 	player.room = room;
 
 	return ok(room);

@@ -4,6 +4,8 @@ import { ChangePlayerSetting } from "@common/types/sockets";
 import { IServerSocket } from "@types";
 import { err, ok, Result } from "neverthrow";
 import settings from "settings.backend";
+import generateColor from "utils/generateColor";
+import generateNickname from "utils/generateNickname";
 
 // Map of socketIDs to Players
 const players = new Map<string, Player>();
@@ -59,17 +61,17 @@ function addPlayer(player: Player) {
 	console.log(`Added player ${player.playerId}`);
 }
 
-function createAndAddPlayer(
-	socket: IServerSocket,
-	nickname: string
-): Result<Player, IError> {
+function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 	const player: Player = {
 		socket,
+		nickname: generateNickname(),
+		color: generateColor(),
 		playerId: socket.id,
-		nickname: nickname, // TODO: find solution for nickname. Player should only get created
 		room: null,
 		isReady: false,
 	};
+
+	console.log("Created player", player);
 
 	if (players.has(player.playerId))
 		return err({
@@ -95,6 +97,9 @@ function changePlayerSetting(
 			break;
 		case "nickname":
 			player.nickname = value;
+			break;
+		case "color":
+			player.color = value;
 			break;
 		default:
 			return err({
