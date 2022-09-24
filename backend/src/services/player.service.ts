@@ -71,8 +71,6 @@ function createAndAddPlayer(socket: IServerSocket): Result<Player, IError> {
 		isReady: false,
 	};
 
-	console.log("Created player", player);
-
 	if (players.has(player.playerId))
 		return err({
 			type: "PlayerAlreadyExistsError",

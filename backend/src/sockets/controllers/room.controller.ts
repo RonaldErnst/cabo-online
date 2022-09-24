@@ -117,6 +117,7 @@ function handleChangePlayerSetting(
 	socket: IServerSocket,
 	setting: ChangePlayerSetting
 ) {
+    console.log("Change Player Setting", setting);
 	getExistingPlayer(socket.id)
 		.andThen((player) => changePlayerSetting(player, setting))
 		.match(

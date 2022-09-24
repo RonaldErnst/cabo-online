@@ -2,6 +2,7 @@ import { IError } from "@common/types/errors";
 import { PlayerClientData } from "@common/types/models/player.model";
 import { RoomClientData, RoomSettings } from "@common/types/models/room.model";
 import { ChangePlayerSetting, ChangeRoomSetting } from "@common/types/sockets";
+import debounce from "lodash.debounce";
 import {
 	createContext,
 	FC,
@@ -19,6 +20,7 @@ interface ILobbyContext {
 	player: PlayerClientData | undefined;
 	lobby: RoomClientData | undefined;
 	roomSettings: RoomSettings;
+    getPlayer: (playerId: string) => PlayerClientData | undefined;
 	changeRoomSetting: (roomSetting: ChangeRoomSetting) => void;
     changePlayerSetting: (playerSetting: ChangePlayerSetting) => void;
 }
@@ -70,7 +72,7 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		};
 	}, [errorEventsListener, socket]);
 
-	const changeRoomSetting = useCallback((roomSetting: ChangeRoomSetting) => {
+	const changeRoomSetting = debounce(useCallback((roomSetting: ChangeRoomSetting) => {
 		switch (roomSetting.setting) {
 			case "isPrivate":
 				// Only set password locally for host#
@@ -92,9 +94,9 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 			type: "CHANGE_ROOM_SETTING",
 			setting: roomSetting,
 		});
-	}, [socket]);
+	}, [socket]), 500);
 
-    const changePlayerSetting = useCallback((playerSetting: ChangePlayerSetting) => {
+    const changePlayerSetting = debounce(useCallback((playerSetting: ChangePlayerSetting) => {
         switch(playerSetting.setting) {
             case "isReady": // Do nothing
                 break;
@@ -108,12 +110,17 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
         }
 
         socket.emit("ROOM", {type: "CHANGE_ROOM_PLAYER", setting: playerSetting})
-    }, [socket]);
+    }, [socket]), 500);
+
+    const getPlayer = (playerId: string) => {
+        return lobby?.players.find(p => p.playerId === playerId);
+    }
 
 	const value = {
 		player,
 		lobby,
 		roomSettings,
+        getPlayer,
 		changeRoomSetting,
         changePlayerSetting,
 	};

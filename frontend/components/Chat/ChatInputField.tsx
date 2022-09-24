@@ -38,7 +38,6 @@ const ChatInputField = () => {
 	};
 
 	const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-        console.log(e.code)
 		if (!e.shiftKey && e.code.includes("Enter")) {
 			e.preventDefault();
 			formRef.current?.requestSubmit();

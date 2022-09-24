@@ -1,6 +1,7 @@
 import {
 	adjectives,
 	animals,
+    colors,
 	Config,
 	names,
 	uniqueNamesGenerator,
@@ -14,7 +15,7 @@ const configAnim: Config = {
 };
 
 const configNames: Config = {
-	dictionaries: [adjectives, names],
+	dictionaries: [colors, names],
 	style: "capital",
 	separator: "",
 	length: 2,

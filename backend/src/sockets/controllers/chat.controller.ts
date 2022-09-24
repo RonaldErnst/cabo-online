@@ -2,7 +2,6 @@ import { ChatClientServerEvent } from "@common/types/sockets";
 import { getExistingPlayer } from "@services/player.service";
 import { IServerSocket } from "@types";
 import socketIO from "app";
-import transformPlayerClientData from "utils/transformPlayerClientData";
 
 function handleChatMessage(socket: IServerSocket, message: string) {
 	getExistingPlayer(socket.id).match(
@@ -21,7 +20,7 @@ function handleChatMessage(socket: IServerSocket, message: string) {
 				message: {
 					text: message,
 					isSystemMessage: false,
-					player: transformPlayerClientData(player),
+					playerId: player.playerId,
 				},
 			});
 		},
