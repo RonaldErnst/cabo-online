@@ -40,15 +40,16 @@ const PlayerMessage: FC<{
 
     console.log(color);
 
+    // TODO get color working
 	return (
 		<div
-			className={`justify-self-end max-w-fit relative rounded-lg ${
+			className={`max-w-fit rounded-lg ${
 				isAuthor
-					? `justify-self-end bg-blue-400`
-					: `justify-self-start bg-slate-300`
+					? `place-self-end bg-blue-400 ml-8`
+					: `place-self-start bg-slate-400 mr-8`
 			}`}
 		>
-			<div className={`h-0 px-4 py-1 mb-1 text-sm text-[${color}]`}>
+			<div className={`h-0 px-4 py-1 mb-1 text-sm font-bold text-[${color}]`}>
 				{nickname}
 			</div>
 			<p

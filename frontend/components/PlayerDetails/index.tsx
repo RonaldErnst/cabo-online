@@ -52,7 +52,7 @@ const PlayerDetails = () => {
 	const handleChangeNickname: ChangeEventHandler<HTMLInputElement> = (e) => {
 		e.preventDefault();
 		setNickname(e.target.value);
-        setNickError(null);
+		setNickError(null);
 
 		validateNickname(e.target.value)
 			.then((nn) => {
@@ -82,23 +82,30 @@ const PlayerDetails = () => {
 				loading ? "pointer-events-none grayscale" : ""
 			}`}
 		>
-			<div className="flex flex-col justify-center items-center gap-y-8 bg-slate-800 p-16 rounded-xl drop-shadow-lg">
+			<div className="flex flex-col justify-center items-center gap-y-8 bg-slate-600 p-16 rounded-xl drop-shadow-lg">
 				<div className="flex flex-row justify-center items-center gap-x-12 ">
-                    <div className="flex flex-col justify-center items-center gap-y-4">
-                    {nickError === null? null : (<div className="flex-0 text-md text-red-500">{nickError}</div>)}
-                    <input
-                        name="nickname"
-                        placeholder="Enter your nickname"
-                        type="text"
-                        value={loading ? "" : nickname}
-                        onChange={handleChangeNickname}
-                        className="w-80 h-12 p-2 rounded-md text-xl"
-                    /></div>
-					<CirclePicker
-						colors={PlayerColorOptions}
-						color={loading ? undefined : color}
-						onChangeComplete={handleChangeColor}
-					/>
+					<div className="flex flex-col justify-center items-center gap-y-4">
+						{nickError === null ? null : (
+							<div className="flex-0 text-md text-red-500">
+								{nickError}
+							</div>
+						)}
+						<input
+							name="nickname"
+							placeholder="Enter your nickname"
+							type="text"
+							value={loading ? "" : nickname}
+							onChange={handleChangeNickname}
+							className="w-80 h-12 p-2 rounded-md text-xl"
+						/>
+					</div>
+					<div className="p-8 bg-slate-800 rounded-xl drop-shadow-lg">
+						<CirclePicker
+							colors={PlayerColorOptions}
+							color={loading ? undefined : color}
+							onChangeComplete={handleChangeColor}
+						/>
+					</div>
 				</div>
 				<button
 					className={`px-4 py-2 rounded-lg text-xl font-bold flex flex-row items-center ${
