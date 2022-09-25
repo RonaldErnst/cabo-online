@@ -66,7 +66,7 @@ function handleJoinRoom(
 		);
 }
 
-function handleLeaveRoom(socket: IServerSocket) {
+export function handleLeaveRoom(socket: IServerSocket) {
 	getExistingPlayer(socket.id)
 		.andThen((player) =>
 			leaveRoom(player).map((data) => ({ data, player }))

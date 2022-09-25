@@ -199,9 +199,11 @@ function leaveRoom(player: Player): Result<{deleted: boolean, room: Room}, IErro
 
 	// Room is not empty
 	// If host left the lobby, assign new host
+    // Only assign
 	if (room.host === player.playerId) {
-		// TODO Assign new host
-		room.host = room.players[0].playerId;
+		// Room can be empty if settings.removeEmptyRoom is false
+        if(room.players.length > 0)
+		    room.host = room.players[0].playerId;
 	}
 
 	return ok({deleted: false, room});

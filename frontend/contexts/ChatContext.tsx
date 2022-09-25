@@ -1,6 +1,6 @@
 import { IError } from "@common/types/errors";
 import { ChatMessage } from "@common/types/models/chat.models";
-import { ChatServerClientEvent } from "@common/types/sockets";
+import { ChatServerClientEvent, RoomServerClientEvent } from "@common/types/sockets";
 import {
 	createContext,
 	FC,
@@ -61,15 +61,24 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 		[]
 	);
 
+    const roomEventListener = useCallback((roomEvent: RoomServerClientEvent) => {
+        switch(roomEvent.type) {
+            case "CHANGE_ROOM":
+                roomEvent.room;
+        }
+    }, []);
+
 	useEffect(() => {
 		socket.on("CHAT", chatEventListener);
+        socket.on("ROOM", roomEventListener);
 		socket.on("ERROR", errorListener);
 
 		return () => {
 			socket.off("CHAT", chatEventListener);
+            socket.off("ROOM", roomEventListener);
 			socket.off("ERROR", errorListener);
 		};
-	}, [chatEventListener, errorListener, socket]);
+	}, [chatEventListener, errorListener, roomEventListener, socket]);
 
 	const sendMessage = (message: string) => {
 		socket.emit("CHAT", { type: "MESSAGE", message });
