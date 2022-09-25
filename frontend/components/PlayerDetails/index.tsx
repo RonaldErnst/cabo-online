@@ -96,7 +96,7 @@ const PlayerDetails = () => {
 							type="text"
 							value={loading ? "" : nickname}
 							onChange={handleChangeNickname}
-							className="w-80 h-12 p-2 rounded-md text-xl"
+							className={`w-80 h-12 p-2 rounded-md text-xl ${nickError !== null? "ring-4 ring-red-500" : ""}`}
 						/>
 					</div>
 					<div className="p-8 bg-slate-800 rounded-xl drop-shadow-lg">

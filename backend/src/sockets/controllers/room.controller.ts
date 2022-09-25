@@ -69,12 +69,17 @@ function handleJoinRoom(
 function handleLeaveRoom(socket: IServerSocket) {
 	getExistingPlayer(socket.id)
 		.andThen((player) =>
-			leaveRoom(player).map((room) => ({ room, player }))
+			leaveRoom(player).map((data) => ({ data, player }))
 		)
 		.match(
-			({ room, player }) => {
+			({ data, player }) => {
+                if(data.deleted) {
+                    socketIO.emit("ROOM", { type: "DELETE_ROOM", roomId: data.room.roomId });
+                    return;
+                }
+
 				console.log(
-					`Player ${player.playerId} left room ${room.roomId}`
+					`Player ${player.playerId} left room ${data.room.roomId}`
 				);
 
 				// Players have to be removed since they only get created when joining
@@ -83,7 +88,7 @@ function handleLeaveRoom(socket: IServerSocket) {
 
 				socketIO.emit("ROOM", {
 					type: "CHANGE_ROOM",
-					room: transformRoomClientData(room),
+					room: transformRoomClientData(data.room),
 				});
 			},
 			(err) => {

@@ -95,6 +95,15 @@ function getRoom(roomId: string) {
 }
 
 /**
+ * Delete a given room
+ * @param roomId 
+ * @returns true if the room was successfully deleted
+ */
+function deleteRoom(roomId: string) {
+    return rooms.delete(roomId);
+}
+
+/**
  * @returns Array of all currently available rooms
  */
 function getAllRooms() {
@@ -169,7 +178,7 @@ function joinRoom(
  * @param player
  * @returns
  */
-function leaveRoom(player: Player): Result<Room, IError> {
+function leaveRoom(player: Player): Result<{deleted: boolean, room: Room}, IError> {
 	const room = player.room;
 
 	if (room === null)
@@ -182,20 +191,20 @@ function leaveRoom(player: Player): Result<Room, IError> {
 	player.room = null;
 	player.socket.leave(room.roomId);
 
-	if (settings.removeEmptyRoom && room.players.length === 0) {
-		rooms.delete(room.roomId);
 
-		socketIO.emit("ROOM", { type: "DELETE_ROOM", roomId: room.roomId });
+	if (settings.removeEmptyRoom && room.players.length === 0) {
+		if(deleteRoom(room.roomId)) // Room was deleted, handle in controller
+            ok({deleted: true, room});
 	}
 
 	// Room is not empty
 	// If host left the lobby, assign new host
 	if (room.host === player.playerId) {
-		// Assign new host
-		room.host = null;
+		// TODO Assign new host
+		room.host = room.players[0].playerId;
 	}
 
-	return ok(room);
+	return ok({deleted: false, room});
 }
 
 /**

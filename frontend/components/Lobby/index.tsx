@@ -2,11 +2,13 @@ import { IError } from "@common/types/errors";
 import { RoomSettings } from "@common/types/models/room.model";
 import Chat from "@components/Chat";
 import PlayerDetails from "@components/PlayerDetails";
+import LobbyPlayers from "@components/LobbyPlayers";
 import { ChatProvider } from "@contexts/ChatContext";
 import { LobbyProvider } from "@contexts/LobbyContext";
 import { useSocket } from "@contexts/SocketContext";
 import { FC, useEffect } from "react";
 import PasswordPrompt from "./PasswordPrompt";
+import LobbySettings from "./LobbySettings";
 
 interface Props {
 	roomId: string;
@@ -61,10 +63,12 @@ const Lobby: FC<{ data: Props }> = ({
 		>
 			<ChatProvider>
 				<div className="bg-slate-700 w-full h-full flex flex-row">
-					<div className="grow grid place-content-center">
-						<div className="">
-							<PlayerDetails />
+					<div className="grow flex flex-col justify-center items-center gap-y-12"> {/* TODO upper part 3/5 or 3/4 of height */}
+						<div className="flex flex-row justify-center items-center gap-x-8">
+							<PlayerDetails /> {/* TODO Show that you are the lobby host */}
+                            <LobbySettings />
 						</div>
+                        <LobbyPlayers />
 					</div>
 					<Chat />
 				</div>
