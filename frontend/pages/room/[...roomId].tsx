@@ -1,7 +1,10 @@
+import { IError } from "@common/types/errors";
 import { RoomSettings } from "@common/types/models/room.model";
 import { Lobby } from "@components";
+import PasswordPrompt from "@components/PasswordPrompt";
+import { ChatProvider, LobbyProvider, useSocket } from "@contexts";
 import { GetServerSideProps } from "next";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import existsRoom from "utils/existsRoom";
 import getDefaultRoomSettings from "utils/getDefaultRoomSettings";
 
@@ -16,15 +19,54 @@ const RoomPage: FC<Props> = ({
 	roomId,
 	requiresPassword,
 	password,
-	defaultRoomSettings
+	defaultRoomSettings,
 }) => {
-	const data = {
-		roomId,
-		requiresPassword,
-		password,
-		defaultRoomSettings
-	};
-	return <Lobby data={data} />;
+	const socket = useSocket();
+
+	useEffect(() => {
+		// If room requires password and no pw given, do nothing, prompt pw
+		if (requiresPassword && password === null) return;
+
+		const errorListener = (err: IError) => {
+			console.log(err);
+			socket.off("ERROR", errorListener);
+		};
+
+		socket.once("ERROR", errorListener);
+
+		// Join the room. Either no pw required (pw=null) or pw already given
+		// TODO: nickname erstellung und color vergabe auf Serverseite anstatt von Client aus
+		socket.emit("ROOM", { type: "JOIN_ROOM", roomId, password });
+
+		return () => {
+			// If room requires password and no pw given, do nothing, prompt pw
+			if (requiresPassword && password === null) return;
+
+			const errorListener = (err: IError) => {
+				console.log(err); // TODO handle Error
+				socket.off("ERROR", errorListener);
+			};
+
+			socket.once("ERROR", errorListener);
+
+			// Only leave if player has joined the room
+			socket.emit("ROOM", { type: "LEAVE_ROOM" });
+		};
+	}, [password, requiresPassword, roomId, socket]);
+
+	if (requiresPassword && password === null)
+		return <PasswordPrompt roomId={roomId} />;
+
+	return (
+		<LobbyProvider
+			defaultRoomSettings={defaultRoomSettings}
+			roomId={roomId}
+		>
+			<ChatProvider>
+				<Lobby />
+			</ChatProvider>
+		</LobbyProvider>
+	);
 };
 
 export const getServerSideProps: GetServerSideProps = async ({
@@ -73,7 +115,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: false,
 					password: null,
-					defaultRoomSettings
+					defaultRoomSettings,
 				},
 			};
 
@@ -87,7 +129,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: true,
 					password: null,
-					defaultRoomSettings
+					defaultRoomSettings,
 				},
 			};
 
@@ -96,7 +138,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 				roomId: room.roomId,
 				requiresPassword: true,
 				password: Array.isArray(pw) ? pw[0] : pw,
-				defaultRoomSettings
+				defaultRoomSettings,
 			},
 		};
 	} catch (err) {

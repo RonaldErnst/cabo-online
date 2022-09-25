@@ -166,10 +166,20 @@ function joinRoom(
 			message: `Password does not match`,
 		});
 
+    if(room.players.length >= room.maxPlayerCount)
+        return err({
+            type: "RoomAlreadyFullError",
+            message: "Room is already full"
+        });
+
+    // Set host if room has no host, can only happen if settings.removeEmptyRoom is false
+    if(room.players.length === 0 && room.host === null) 
+        room.host = player.playerId;
+
 	room.players.push(player);
 	player.socket.join(room.roomId);
 	player.room = room;
-
+    
 	return ok(room);
 }
 

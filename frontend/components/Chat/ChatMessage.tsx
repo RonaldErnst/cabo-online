@@ -2,6 +2,7 @@ import { ChatMessage } from "@common/types/models/chat.models";
 import { useLobby } from "@contexts";
 import { useSocket } from "@contexts/SocketContext";
 import { FC } from "react";
+import { Check, X } from "react-bootstrap-icons";
 
 interface Props {
 	message: ChatMessage;
@@ -37,8 +38,7 @@ const PlayerMessage: FC<{
     const isAuthor = player.playerId === socket.id;
     const color = player.color;
     const nickname = player.nickname;
-
-    console.log(color);
+    const isReady = player.isReady;
 
     // TODO get color working
 	return (

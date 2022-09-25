@@ -10,6 +10,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
+import { useLobby } from "./LobbyContext";
 import { useSocket } from "./SocketContext";
 
 interface IChatContext {
@@ -29,6 +30,7 @@ export function useChat() {
 
 export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 	const socket = useSocket();
+    const { lobby } = useLobby();
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 
 	const errorListener = useCallback((err: IError) => {
@@ -61,24 +63,15 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 		[]
 	);
 
-    const roomEventListener = useCallback((roomEvent: RoomServerClientEvent) => {
-        switch(roomEvent.type) {
-            case "CHANGE_ROOM":
-                roomEvent.room;
-        }
-    }, []);
-
 	useEffect(() => {
 		socket.on("CHAT", chatEventListener);
-        socket.on("ROOM", roomEventListener);
 		socket.on("ERROR", errorListener);
 
 		return () => {
 			socket.off("CHAT", chatEventListener);
-            socket.off("ROOM", roomEventListener);
 			socket.off("ERROR", errorListener);
 		};
-	}, [chatEventListener, errorListener, roomEventListener, socket]);
+	}, [chatEventListener, errorListener, socket]);
 
 	const sendMessage = (message: string) => {
 		socket.emit("CHAT", { type: "MESSAGE", message });

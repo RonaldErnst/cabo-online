@@ -3,9 +3,10 @@ export type RoomAlreadyExistsError = "RoomAlreadyExistsError";
 export type WrongPasswordRoomError = "WrongPasswordRoomError";
 export type PlayerNotInRoomError = "PlayerNotInRoomError";
 export type AlreadyInRoomError = "AlreadyInRoomError";
+export type RoomAlreadyFullError = "RoomAlreadyFullError";
 export type NotPrivateRoomError = "NotPrivateRoomError";
 export type InvalidRoomSetting = "InvalidRoomSetting";
-export type PlayerNotHostError = "PlayerNotHostError"
+export type PlayerNotHostError = "PlayerNotHostError";
 
 export type RoomError =
 	| "RoomError"
@@ -13,6 +14,7 @@ export type RoomError =
 	| RoomAlreadyExistsError
 	| WrongPasswordRoomError
 	| AlreadyInRoomError
+	| RoomAlreadyFullError
 	| PlayerNotInRoomError
 	| NotPrivateRoomError
     | InvalidRoomSetting

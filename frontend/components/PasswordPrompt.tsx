@@ -2,11 +2,11 @@ import ErrorAlert from "@components/ErrorAlert";
 import { useSocket } from "@contexts/SocketContext";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import { useRouter } from "next/router";
-import { FC, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 import checkPassword from "utils/checkPassword";
 
 interface Props {
-    roomId: string;
+	roomId: string;
 }
 
 interface FormValues {
@@ -14,30 +14,33 @@ interface FormValues {
 }
 
 const PasswordPrompt: FC<Props> = ({ roomId }) => {
-    const socket = useSocket();
-    const router = useRouter();
+	const socket = useSocket();
+	const router = useRouter();
 	const inputRef = useRef<HTMLElement>(null);
 	const initialValues = { password: "" };
 
+	useEffect(() => {
+		inputRef.current?.focus();
+	}, []);
+
 	const handleSubmit = async (
 		{ password }: FormValues,
-        {setSubmitting, setFieldError}: FormikHelpers<FormValues>
+		{ setSubmitting, setFieldError }: FormikHelpers<FormValues>
 	) => {
-        setSubmitting(true);
+		setSubmitting(true);
 
-        const { ok: isCorrect, error } = await checkPassword(roomId, password);
+		const { ok: isCorrect, error } = await checkPassword(roomId, password);
 
-        if(isCorrect) {
-            router.replace(`/room/${roomId}?pw=${password}`);
-        } else {
-            if(error === undefined)
-                setFieldError("password", "Unexpected error");
-            else
-                setFieldError("password", error.message);
-        }
+		if (isCorrect) {
+			router.replace(`/room/${roomId}?pw=${password}`);
+		} else {
+			if (error === undefined)
+				setFieldError("password", "Unexpected error");
+			else setFieldError("password", error.message);
+		}
 
-        setSubmitting(false);
-    };
+		setSubmitting(false);
+	};
 
 	return (
 		<div className="bg-slate-700 w-full h-full flex flex-col justify-center items-center">
@@ -47,13 +50,7 @@ const PasswordPrompt: FC<Props> = ({ roomId }) => {
 				validateOnBlur={false}
 				validateOnChange={false}
 			>
-				{({
-					setFieldValue,
-					handleSubmit,
-					isSubmitting,
-					errors,
-					setFieldError,
-				}) => (
+				{({ handleSubmit, isSubmitting, errors, setFieldError }) => (
 					<Form className="flex flex-col justify-center items-center gap-4 p-16 rounded-xl drop-shadow-lg bg-slate-600">
 						{errors.password ? (
 							<ErrorAlert
@@ -88,6 +85,6 @@ const PasswordPrompt: FC<Props> = ({ roomId }) => {
 			</Formik>
 		</div>
 	);
-}
+};
 
 export default PasswordPrompt;

@@ -116,6 +116,7 @@ function removePlayer(playerId: string) {
 
 export {
 	createAndAddPlayer,
+    getPlayer,
 	getExistingPlayer,
 	changePlayerSetting,
 	removePlayer,
