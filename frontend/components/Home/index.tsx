@@ -1,4 +1,4 @@
-import PlayerDetails from "@components/PlayerDetails";
+import PlayerDetails from "@components/Lobby/PlayerDetails";
 import { FC } from "react";
 import CreateJoinRoom from "./CreateJoinRoom";
 import NavBar from "./NavBar";

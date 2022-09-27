@@ -5,6 +5,7 @@ import PasswordPrompt from "@components/PasswordPrompt";
 import { ChatProvider, LobbyProvider, useSocket } from "@contexts";
 import { GetServerSideProps } from "next";
 import { FC, useEffect } from "react";
+import checkPassword from "utils/checkPassword";
 import existsRoom from "utils/existsRoom";
 import getDefaultRoomSettings from "utils/getDefaultRoomSettings";
 
@@ -61,6 +62,7 @@ const RoomPage: FC<Props> = ({
 		<LobbyProvider
 			defaultRoomSettings={defaultRoomSettings}
 			roomId={roomId}
+            password={password}
 		>
 			<ChatProvider>
 				<Lobby />
@@ -129,9 +131,20 @@ export const getServerSideProps: GetServerSideProps = async ({
 					roomId: room.roomId,
 					requiresPassword: true,
 					password: null,
-					defaultRoomSettings,
 				},
 			};
+
+        const { ok } = await checkPassword(room.roomId, Array.isArray(pw) ? pw[0] : pw);
+
+        // Wrong password in parameter, prompt new password
+        if(!ok)
+            return {
+                props: {
+					roomId: room.roomId,
+					requiresPassword: true,
+					password: null,
+				},
+            }
 
 		return {
 			props: {

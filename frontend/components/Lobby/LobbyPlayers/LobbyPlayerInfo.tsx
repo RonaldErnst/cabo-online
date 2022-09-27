@@ -7,8 +7,9 @@ interface Props {
 
 const LobbyPlayerInfo: FC<Props> = ({ player }) => {
 	const { nickname, isReady, color } = player;
+    // TODO Buttons and actions for kicking and promoting players
     
-    return <div className="flex flex-col gap-y-4 justify-center items-center bg-slate-800 rounded-lg drop-shadow-lg p-4 font-bold">
+    return <div className="flex flex-col gap-y-4 justify-center items-center bg-slate-800 rounded-lg drop-shadow-lg p-4 font-bold text-lg">
         <div className={`text-[${color}]`}>{nickname}</div>
         <div className={`${isReady? "text-green-500" : "text-red-500"}`}>{isReady? "Ready" : "Not ready"}</div>
     </div>;

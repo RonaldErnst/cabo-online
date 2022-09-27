@@ -96,11 +96,11 @@ function getRoom(roomId: string) {
 
 /**
  * Delete a given room
- * @param roomId 
+ * @param roomId
  * @returns true if the room was successfully deleted
  */
 function deleteRoom(roomId: string) {
-    return rooms.delete(roomId);
+	return rooms.delete(roomId);
 }
 
 /**
@@ -166,20 +166,20 @@ function joinRoom(
 			message: `Password does not match`,
 		});
 
-    if(room.players.length >= room.maxPlayerCount)
-        return err({
-            type: "RoomAlreadyFullError",
-            message: "Room is already full"
-        });
+	if (room.players.length >= room.maxPlayerCount)
+		return err({
+			type: "RoomAlreadyFullError",
+			message: "Room is already full",
+		});
 
-    // Set host if room has no host, can only happen if settings.removeEmptyRoom is false
-    if(room.players.length === 0 && room.host === null) 
-        room.host = player.playerId;
+	// Set host if room has no host, can only happen if settings.removeEmptyRoom is false
+	if (room.players.length === 0 && room.host === null)
+		room.host = player.playerId;
 
 	room.players.push(player);
 	player.socket.join(room.roomId);
 	player.room = room;
-    
+
 	return ok(room);
 }
 
@@ -188,7 +188,9 @@ function joinRoom(
  * @param player
  * @returns
  */
-function leaveRoom(player: Player): Result<{deleted: boolean, room: Room}, IError> {
+function leaveRoom(
+	player: Player
+): Result<{ deleted: boolean; room: Room }, IError> {
 	const room = player.room;
 
 	if (room === null)
@@ -201,24 +203,23 @@ function leaveRoom(player: Player): Result<{deleted: boolean, room: Room}, IErro
 	player.room = null;
 	player.socket.leave(room.roomId);
 
-
 	if (settings.removeEmptyRoom && room.players.length === 0) {
-		if(deleteRoom(room.roomId)) // Room was deleted, handle in controller
-            ok({deleted: true, room});
+		if (deleteRoom(room.roomId))
+			// Room was deleted, handle in controller
+			ok({ deleted: true, room });
 	}
 
 	// Room is not empty
 	// If host left the lobby, assign new host
-    // Only assign host, if room is not empty
+	// Only assign host, if room is not empty
 	if (room.host === player.playerId) {
-        room.host = null;
+		room.host = null;
 
 		// Room can be empty if settings.removeEmptyRoom is false
-        if(room.players.length > 0)
-		    room.host = room.players[0].playerId;
+		if (room.players.length > 0) room.host = room.players[0].playerId;
 	}
 
-	return ok({deleted: false, room});
+	return ok({ deleted: false, room });
 }
 
 /**
@@ -279,6 +280,12 @@ function changeRoomSetting(
 			room.password = value.password;
 			break;
 		case "maxPlayerCount":
+			if (value > settings.maxPlayerNumberOption)
+				return err({
+					type: "InvalidRoomSetting",
+					message: `Invalid room setting: ${value} > ${settings.maxPlayerNumberOption}`,
+				});
+
 			room.maxPlayerCount = value;
 			break;
 		default:

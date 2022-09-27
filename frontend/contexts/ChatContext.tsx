@@ -63,6 +63,14 @@ export const ChatProvider: FC<PropsWithChildren> = ({ children }) => {
 		[]
 	);
 
+    // TODO change room event needs a "change" attribute so it can displayed in chat (host, isprivate and maxplayernumber change)
+    const roomEventListener = useCallback((roomEvent: RoomServerClientEvent) => {
+        if(roomEvent.type !== "CHANGE_ROOM")
+            return;
+
+        
+    }, []);
+
 	useEffect(() => {
 		socket.on("CHAT", chatEventListener);
 		socket.on("ERROR", errorListener);

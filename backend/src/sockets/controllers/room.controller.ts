@@ -102,11 +102,12 @@ function handleChangeRoomSetting(
 	socket: IServerSocket,
 	setting: ChangeRoomSetting
 ) {
+    console.log("Change Room Setting", setting);
 	getExistingPlayer(socket.id)
 		.andThen((player) => changeRoomSetting(player, setting))
 		.match(
 			(room) => {
-				socketIO.in(room.roomId).emit("ROOM", {
+				socketIO.emit("ROOM", {
 					type: "CHANGE_ROOM",
 					room: transformRoomClientData(room),
 				});

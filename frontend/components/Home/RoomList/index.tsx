@@ -6,7 +6,7 @@ const RoomList: FC = () => {
 	const rooms = useRooms();
 
 	return (
-		<div className="flex flex-col m-4 text-center text-lg">
+		<div className="flex flex-col m-4 text-center font-semibold">
 			{rooms.length === 0 ? (
 				<div>No available rooms</div>
 			) : (
@@ -20,8 +20,10 @@ const RoomList: FC = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{rooms.map((room) => {
-							return <Room key={room.roomId} room={room} />;
+						{rooms.map((room, i) => {
+							return (
+								<Room key={room.roomId} room={room} index={i} />
+							);
 						})}
 					</tbody>
 				</table>

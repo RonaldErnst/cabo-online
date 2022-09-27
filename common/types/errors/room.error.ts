@@ -7,7 +7,8 @@ export type RoomAlreadyFullError = "RoomAlreadyFullError";
 export type NotPrivateRoomError = "NotPrivateRoomError";
 export type InvalidRoomSetting = "InvalidRoomSetting";
 export type PlayerNotHostError = "PlayerNotHostError";
-
+// TODO clean up errors, too many
+// Only individual error type needed if it requires different messages
 export type RoomError =
 	| "RoomError"
 	| UnknownRoomError
@@ -17,5 +18,5 @@ export type RoomError =
 	| RoomAlreadyFullError
 	| PlayerNotInRoomError
 	| NotPrivateRoomError
-    | InvalidRoomSetting
-    | PlayerNotHostError;
+	| InvalidRoomSetting
+	| PlayerNotHostError;

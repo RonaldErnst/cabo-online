@@ -1,4 +1,10 @@
 {
+    "common": {
+        "maxPlayerNumberOption": 10
+    },
+    "frontend": {
+        "chatMessageMaxLength": 1000
+    },
     "backend": {
         "port": 4000,
         "pingInterval": 5000,
@@ -6,8 +12,5 @@
         "removeEmptyRoom": false,
         "cleanRoomsInterval": 60000,
         "cleanPlayersInterval": 60000
-    },
-    "frontend": {
-        "chatMessageMaxLength": 1000
     }
 }

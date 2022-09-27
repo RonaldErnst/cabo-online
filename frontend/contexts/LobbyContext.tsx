@@ -20,6 +20,7 @@ interface ILobbyContext {
 	player: PlayerClientData | undefined;
 	lobby: RoomClientData | undefined;
 	roomSettings: RoomSettings;
+    password: string | null;
     getPlayer: (playerId: string) => PlayerClientData | undefined;
 	changeRoomSetting: (roomSetting: ChangeRoomSetting) => void;
     changePlayerSetting: (playerSetting: ChangePlayerSetting) => void;
@@ -38,12 +39,14 @@ export function useLobby() {
 interface Props {
 	roomId: string;
 	defaultRoomSettings: RoomSettings;
+    password: string | null;
 }
 
 export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 	children,
 	roomId,
 	defaultRoomSettings,
+    password
 }) => {
 	const socket = useSocket();
 	const rooms = useRooms();
@@ -120,6 +123,7 @@ export const LobbyProvider: FC<PropsWithChildren<Props>> = ({
 		player,
 		lobby,
 		roomSettings,
+        password,
         getPlayer,
 		changeRoomSetting,
         changePlayerSetting,

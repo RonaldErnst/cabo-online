@@ -1,6 +1,6 @@
 import Chat from "@components/Chat";
-import LobbyPlayers from "@components/LobbyPlayers";
-import PlayerDetails from "@components/PlayerDetails";
+import LobbyPlayers from "@components/Lobby/LobbyPlayers";
+import PlayerDetails from "@components/Lobby/PlayerDetails";
 import { useLobby, useSocket } from "@contexts";
 import { FC } from "react";
 import LobbySettings from "./LobbySettings";

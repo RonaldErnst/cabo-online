@@ -6,7 +6,7 @@ import { LockFill, Unlock } from "react-bootstrap-icons";
 import existsRoom from "utils/existsRoom";
 
 
-const Room: FC<{ room: RoomClientData }> = ({ room }) => {
+const Room: FC<{ room: RoomClientData, index: number }> = ({ room, index }) => {
     const router = useRouter();
 
     const handleJoinRoom = async (
@@ -41,7 +41,7 @@ const Room: FC<{ room: RoomClientData }> = ({ room }) => {
 	};
 
 	return (
-		<tr className="h-12">
+		<tr className={`h-12 ${index % 2 === 0? "bg-slate-600" : ""}`}>
 			<td>{room.roomId}</td>
 			<td>
 				{room.players.length} / {room.maxPlayerCount}

@@ -152,7 +152,7 @@ const CreateJoinRoom = () => {
 							placeholder="Join or create a new room..."
 							className="w-80 h-12 p-2 rounded-md text-xl"
 						/>
-						<div className="flex flex-row gap-12 justify-center text-lg">
+						<div className="flex flex-row gap-12 justify-center text-lg font-semibold">
 							<button
 								className="bg-orange-500 py-2 px-4 rounded-lg transition active:scale-95 hover:bg-orange-400 disabled:bg-slate-5"
 								disabled={isSubmitting}

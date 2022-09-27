@@ -78,25 +78,34 @@ const PlayerDetails = () => {
 
 	return (
 		<div
-			className={`grid place-content-center ${
+			className={`text-xl text-white grid place-content-center ${
 				loading ? "pointer-events-none grayscale" : ""
 			}`}
 		>
 			<div className="flex flex-col justify-center items-center gap-y-8 bg-slate-600 p-16 rounded-xl drop-shadow-lg">
 				<div className="flex flex-row justify-center items-center gap-x-12 ">
-					<div className="flex flex-col justify-center items-center gap-y-4">
+					<div className="grid place-content-center gap-y-2">
+						<label
+							htmlFor="nickname"
+							className="block place-self-start text-sm font-medium text-gray-300"
+						>
+							Nickname
+						</label>
 						{nickError === null ? null : (
-							<div className="flex-0 text-md text-red-500">
+							<div className="text-sm text-red-500 font-semibold drop-shadow-md shadow-red-500">
 								{nickError}
 							</div>
 						)}
 						<input
+							id="nickname"
 							name="nickname"
 							placeholder="Enter your nickname"
 							type="text"
 							value={loading ? "" : nickname}
 							onChange={handleChangeNickname}
-							className={`w-80 h-12 p-2 rounded-md text-xl ${nickError !== null? "ring-4 ring-red-500" : ""}`}
+							className={`w-80 h-12 p-2 rounded-md bg-slate-800 ${
+								nickError !== null ? "outline-none focus:ring-2 focus:ring-red-500 shadow-md shadow-red-500" : ""
+							}`}
 						/>
 					</div>
 					<div className="p-8 bg-slate-800 rounded-xl drop-shadow-lg">
