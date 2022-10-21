@@ -62,7 +62,6 @@ const PlayerDetails = () => {
 				});
 			})
 			.catch((err: Yup.ValidationError) => {
-				console.log(err); // TODO display error
 				setNickError(err.message);
 			});
 	};

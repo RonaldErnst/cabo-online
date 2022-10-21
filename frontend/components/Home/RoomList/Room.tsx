@@ -13,15 +13,6 @@ const Room: FC<{ room: RoomClientData, index: number }> = ({ room, index }) => {
 		roomId: string
 	) => {
 		try {
-			// Check if room exists
-			const room = await existsRoom(roomId);
-
-			// If room doesn't exist, show Error
-			if (room === null) {
-                // TODO show error
-				return;
-			}
-
             if(room.players.length >= room.maxPlayerCount) {
                 // TODO show error
                 return;

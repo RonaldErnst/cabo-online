@@ -38,9 +38,7 @@ const PlayerMessage: FC<{
     const isAuthor = player.playerId === socket.id;
     const color = player.color;
     const nickname = player.nickname;
-    const isReady = player.isReady;
 
-    // TODO get color working
 	return (
 		<div
 			className={`max-w-fit rounded-lg ${

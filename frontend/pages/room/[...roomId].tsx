@@ -36,7 +36,6 @@ const RoomPage: FC<Props> = ({
 		socket.once("ERROR", errorListener);
 
 		// Join the room. Either no pw required (pw=null) or pw already given
-		// TODO: nickname erstellung und color vergabe auf Serverseite anstatt von Client aus
 		socket.emit("ROOM", { type: "JOIN_ROOM", roomId, password });
 
 		return () => {

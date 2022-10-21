@@ -47,6 +47,7 @@ const LobbySettings: FC = () => {
 		setMaxPlayerCount(lobby.maxPlayerCount);
 	}, [lobby]);
 
+	// TODO Actions as REST Api request instead of websocket
 	const handelPrivatePassword = (privateValues: IPrivateValues) => {
 		if (isPrivate && password === null) return;
 
@@ -105,6 +106,8 @@ const LobbySettings: FC = () => {
 
 		changeRoomSetting({ setting: "maxPlayerCount", value });
 	};
+
+	const handleStartGame = () => {};
 
 	return (
 		<div
@@ -183,7 +186,13 @@ const LobbySettings: FC = () => {
 					/>
 				</div>
 			</div>
-            {/* TODO start game button */}
+			<button
+				className={`px-4 py-2 rounded-lg text-xl font-bold bg-green-600 disabled:bg-gray-500`}
+				onClick={handleStartGame}
+				disabled={loading || !lobby.players.every((p) => p.isReady)}
+			>
+				Start Game
+			</button>
 		</div>
 	);
 };
