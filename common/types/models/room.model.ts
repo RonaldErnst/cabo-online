@@ -1,3 +1,4 @@
+import { GameState } from "./game.models";
 import { Player, PlayerClientData } from "./player.model";
 
 export interface RoomSettings {
@@ -10,6 +11,8 @@ export type Room = {
 	roomId: string;
 	players: Array<Player>;
 	host: string | null;
+    gameState: GameState | null;
+    // TODO gameSettings: GameSettings
 } & RoomSettings;
 
 export interface RoomClientData {

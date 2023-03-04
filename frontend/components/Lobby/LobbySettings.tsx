@@ -47,7 +47,6 @@ const LobbySettings: FC = () => {
 		setMaxPlayerCount(lobby.maxPlayerCount);
 	}, [lobby]);
 
-	// TODO Actions as REST Api request instead of websocket
 	const handelPrivatePassword = (privateValues: IPrivateValues) => {
 		if (isPrivate && password === null) return;
 

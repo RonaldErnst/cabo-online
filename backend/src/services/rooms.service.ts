@@ -26,6 +26,7 @@ rooms.set("test123", {
 	isPrivate: false,
 	maxPlayerCount: 4,
 	password: null,
+    gameState: null,
 });
 rooms.set("anotherRoom", {
 	host: null,
@@ -34,6 +35,7 @@ rooms.set("anotherRoom", {
 	isPrivate: true,
 	maxPlayerCount: 5,
 	password: "password",
+    gameState: null,
 });
 
 /**
@@ -130,6 +132,7 @@ function createAndAddRoom(
 		roomId,
 		host: null,
 		players: new Array(),
+        gameState: null,
 		...options,
 	};
 
